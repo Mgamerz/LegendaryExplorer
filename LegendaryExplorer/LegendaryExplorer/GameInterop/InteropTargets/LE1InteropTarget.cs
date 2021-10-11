@@ -13,7 +13,7 @@ namespace LegendaryExplorer.GameInterop.InteropTargets
         public override MEGame Game => MEGame.LE1;
         public override bool CanExecuteConsoleCommands => true;
         public override bool CanUpdateTOC => false;
-        public override string InteropASIName => "ZZZ_LEXInteropLE1.asi";
+        public override string InteropASIName => "LE1LEXInterop-v1.asi";
 
         public override string InteropASIDownloadLink =>
             "https://github.com/ME3Tweaks/LE1-ASI-Plugins/releases/tag/LE1LEXInterop-v1.0";
