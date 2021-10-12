@@ -15,7 +15,7 @@ using LegendaryExplorerCore.Unreal;
 using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
 
-namespace LegendaryExplorer.GameInterop
+namespace LegendaryExplorer.GameInterop.InteropModInstallers
 {
     /// <summary>
     /// Installation handler for Interop DLC Mod. Can be subclassed to modify installation behavior
@@ -27,7 +27,9 @@ namespace LegendaryExplorer.GameInterop
 
         protected bool CancelInstallation = false;
 
-        private string InstallInfoPath => Path.Combine(ModInstallPath, "InstallInfo.json");
+        public const string LoaderLoadedMessage = "BioP_Global";
+
+        protected string InstallInfoPath => Path.Combine(ModInstallPath, "InstallInfo.json");
         protected string ModInstallPath => Path.Combine(MEDirectories.GetDLCPath(Game), Target.ModInfo.InteropModName);
 
         public InteropModInstaller(InteropTarget target)
@@ -50,7 +52,7 @@ namespace LegendaryExplorer.GameInterop
 
             if (Target.ModInfo.CanUseCamPath)
             {
-                LiveEditHelper.PadCamPathFile(Game);
+                CamPathHelper.PadCamPathFile(Game);
             }
 
             var augmentedFiles = AugmentAndInstall(GetFilesToAugment(), fileMap);
@@ -139,7 +141,7 @@ namespace LegendaryExplorer.GameInterop
             KismetHelper.AddObjectToSequence(sendMessageToME3Exp, mainSequence);
             KismetHelper.CreateOutputLink(levelLoaded, game is MEGame.ME2 ? "Out" : "Loaded and Visible", sendMessageToME3Exp);
             var stringVar = SequenceObjectCreator.CreateSequenceObject(pcc, "SeqVar_String", game);
-            stringVar.WriteProperty(new StrProperty(LiveEditHelper.LoaderLoadedMessage, "StrValue"));
+            stringVar.WriteProperty(new StrProperty(LoaderLoadedMessage, "StrValue"));
             KismetHelper.AddObjectToSequence(stringVar, mainSequence);
             KismetHelper.CreateVariableLink(sendMessageToME3Exp, "MessageName", stringVar);
 

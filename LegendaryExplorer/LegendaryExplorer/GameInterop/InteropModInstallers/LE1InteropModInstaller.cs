@@ -7,7 +7,7 @@ using LegendaryExplorerCore.Kismet;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 
-namespace LegendaryExplorer.GameInterop
+namespace LegendaryExplorer.GameInterop.InteropModInstallers
 {
     /// <summary>
     /// Subclass of InteropModInstaller for LE1 to select a map and clone in the live edit sequence

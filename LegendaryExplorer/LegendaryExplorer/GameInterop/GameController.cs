@@ -14,7 +14,7 @@ using Keys = System.Windows.Forms.Keys;
 namespace LegendaryExplorer.GameInterop
 {
     /// <summary>
-    /// Handles communication between LEX and a game executable via the interop ASI
+    /// Handles low level communication between LEX and the game executables
     /// </summary>
     public static class GameController
     {

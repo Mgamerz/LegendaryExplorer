@@ -19,10 +19,9 @@ using Newtonsoft.Json;
 
 namespace LegendaryExplorer.GameInterop
 {
-    public static class LiveEditHelper
+    public static class CamPathHelper
     {
         private const string camPathFileName = "ME3LiveEditorCamPath.pcc";
-        public const string LoaderLoadedMessage = "BioP_Global";
 
         private static string InteropModName(MEGame game) =>
             GameController.GetInteropTargetForGame(game).ModInfo.InteropModName
