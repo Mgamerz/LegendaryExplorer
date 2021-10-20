@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Input;
+using LegendaryExplorer.GameInterop.ConsoleCommandExecutors;
 using LegendaryExplorer.Misc.AppSettings;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
@@ -11,7 +13,8 @@ namespace LegendaryExplorer.GameInterop.InteropTargets
     public class LE1InteropTarget : InteropTarget
     {
         public override MEGame Game => MEGame.LE1;
-        public override bool CanExecuteConsoleCommands => true;
+        protected override IConsoleCommandExecutor ConsoleCommandExecutor => pipeClient;
+        private readonly InteropNamedPipeClient pipeClient;
         public override bool CanUpdateTOC => false;
         public override string InteropASIName => "LE1LEXInterop-v1.asi";
 
@@ -27,6 +30,12 @@ namespace LegendaryExplorer.GameInterop.InteropTargets
         };
         public override string ProcessName => "MassEffect1";
         public override uint GameMessageSignature => 0x02AC00C7;
+
+        public LE1InteropTarget()
+        {
+            pipeClient = new InteropNamedPipeClient(this, "LEX_LE1_COMM_PIPE");
+        }
+
         public override void SelectGamePath()
         {
             OpenFileDialog ofd = new()

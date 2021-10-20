@@ -14,12 +14,11 @@ using Keys = System.Windows.Forms.Keys;
 namespace LegendaryExplorer.GameInterop
 {
     /// <summary>
-    /// Handles low level communication between LEX and the game executables
+    /// Handles receipt of WndProc messages from Interop ASI mods, and stores the InteropTargets
     /// </summary>
     public static class GameController
     {
-        public const string TempMapName = "AAAME3EXPDEBUGLOAD";
-
+        // TODO: Split up WndProc hook and InteropTarget management into two different classes
         private static readonly Dictionary<MEGame, InteropTarget> Targets = new()
         {
             {MEGame.LE1, new LE1InteropTarget()},
@@ -39,6 +38,12 @@ namespace LegendaryExplorer.GameInterop
             return GetInteropTargetForGame(game)?.TryGetProcess(out meProcess) ?? false;
         }
 
+        public static bool SendME3TOCUpdateMessage()
+        {
+            return ((ME3InteropTarget)Targets[MEGame.ME3]).SendTOCUpdateMessage();
+        }
+
+        #region WndProc Message Hook
         private static bool hasRegisteredForMessages; 
         public static void InitializeMessageHook(Window window)
         {
@@ -50,13 +55,6 @@ namespace LegendaryExplorer.GameInterop
             }
         }
 
-        public static bool SendME3TOCUpdateMessage()
-        {
-            return ((ME3InteropTarget)Targets[MEGame.ME3]).SendTOCUpdateMessage();
-        }
-
-        //private
-        #region Internal support functions
         [StructLayout(LayoutKind.Sequential)]
         struct COPYDATASTRUCT
         {
@@ -64,6 +62,7 @@ namespace LegendaryExplorer.GameInterop
             public uint cbData;
             public IntPtr lpData;
         }
+
         private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             const int WM_COPYDATA = 0x004a;
@@ -91,82 +90,12 @@ namespace LegendaryExplorer.GameInterop
         }
 
         [DllImport("user32.dll")]
-        static extern bool SendMessage(IntPtr hWnd, uint Msg, int wParam, int lParam);
-        [DllImport("user32.dll")]
-        static extern bool PostMessage(IntPtr hWnd, uint Msg, int wParam, int lParam);
-        const int WM_SYSKEYDOWN = 0x0104;
-
-        private static void SendKey(IntPtr hWnd, Keys key) => SendKey(hWnd, (int)key);
-        private static void SendKey(IntPtr hWnd, int key) => PostMessage(hWnd, WM_SYSKEYDOWN, key, 0);
-
-        /// <summary>
-        /// Executes a console command on the game whose window handle is passed.
-        /// <param name="command"/> can ONLY contain [a-z0-9 ] 
-        /// </summary>
-        /// <param name="gameWindowHandle"></param>
-        /// <param name="command"></param>
-        internal static void DirectExecuteConsoleCommand(IntPtr gameWindowHandle, string command)
-        {
-            SendKey(gameWindowHandle, Keys.Tab);
-            foreach (char c in command)
-            {
-                if (characterMapping.TryGetValue(c, out Keys key))
-                {
-                    SendKey(gameWindowHandle, key);
-                }
-                else
-                {
-                    throw new ArgumentException("Invalid characters!", nameof(command));
-                }
-            }
-            SendKey(gameWindowHandle, Keys.Enter);
-        }
+        private static extern bool SendMessage(IntPtr hWnd, uint Msg, int wParam, int lParam);
 
         internal static bool SendTOCMessage(IntPtr hWnd, uint Msg)
         {
             return SendMessage(hWnd, Msg, 0, 0);
         }
-
-        static readonly Dictionary<char, Keys> characterMapping = new()
-        {
-            ['a'] = Keys.A,
-            ['b'] = Keys.B,
-            ['c'] = Keys.C,
-            ['d'] = Keys.D,
-            ['e'] = Keys.E,
-            ['f'] = Keys.F,
-            ['g'] = Keys.G,
-            ['h'] = Keys.H,
-            ['i'] = Keys.I,
-            ['j'] = Keys.J,
-            ['k'] = Keys.K,
-            ['l'] = Keys.L,
-            ['m'] = Keys.M,
-            ['n'] = Keys.N,
-            ['o'] = Keys.O,
-            ['p'] = Keys.P,
-            ['q'] = Keys.Q,
-            ['r'] = Keys.R,
-            ['s'] = Keys.S,
-            ['t'] = Keys.T,
-            ['u'] = Keys.U,
-            ['v'] = Keys.V,
-            ['w'] = Keys.W,
-            ['x'] = Keys.X,
-            ['y'] = Keys.Y,
-            ['z'] = Keys.Z,
-            ['0'] = Keys.D0,
-            ['1'] = Keys.D1,
-            ['2'] = Keys.D2,
-            ['3'] = Keys.D3,
-            ['4'] = Keys.D4,
-            ['5'] = Keys.D5,
-            ['6'] = Keys.D6,
-            ['7'] = Keys.D7,
-            ['8'] = Keys.D8,
-            ['9'] = Keys.D9,
-            [' '] = Keys.Space,
-        };
 
         #endregion
     }

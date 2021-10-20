@@ -13,7 +13,7 @@ using Microsoft.Win32;
 
 namespace LegendaryExplorer.GameInterop
 {
-    public class InteropHelper
+    public static class InteropHelper
     {
         //Currently will not work, as ASIs are not included in LEX due to anti-virus software freaking out about them :(
         /*public static void InstallInteropASI(MEGame game)

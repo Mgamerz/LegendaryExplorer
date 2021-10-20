@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
+using LegendaryExplorer.GameInterop.ConsoleCommandExecutors;
 using LegendaryExplorer.Misc.AppSettings;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
@@ -12,7 +13,7 @@ namespace LegendaryExplorer.GameInterop.InteropTargets
     public class ME3InteropTarget : InteropTarget
     {
         public override MEGame Game => MEGame.ME3;
-        public override bool CanExecuteConsoleCommands => true;
+        protected override IConsoleCommandExecutor ConsoleCommandExecutor { get; }
         public override bool CanUpdateTOC => true;
         public override string InteropASIName => "LEXInteropME3.asi";
         public override string OldInteropASIName => "ME3ExplorerInterop.asi";
@@ -26,10 +27,16 @@ namespace LegendaryExplorer.GameInterop.InteropTargets
         {
             LiveEditorFilename = "ME3LiveEditor",
             CanUseCamPath = true,
-            CanUseAnimViewer = true
+            CanUseAnimViewer = true,
+            TempMapName = "AAAME3EXPDEBUGLOAD"
         };
         public override string ProcessName => "MassEffect3";
         public override uint GameMessageSignature => 0x02AC00C2;
+
+        public ME3InteropTarget()
+        {
+            ConsoleCommandExecutor = new ConsoleCommandDirectExec(this);
+        }
         public override void SelectGamePath()
         {
             OpenFileDialog ofd = new()

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
+using LegendaryExplorer.GameInterop.ConsoleCommandExecutors;
 using LegendaryExplorer.Misc.AppSettings;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
@@ -13,7 +14,7 @@ namespace LegendaryExplorer.GameInterop.InteropTargets
     public class ME2InteropTarget : InteropTarget
     {
         public override MEGame Game => MEGame.ME2;
-        public override bool CanExecuteConsoleCommands => true;
+        protected override IConsoleCommandExecutor ConsoleCommandExecutor { get; }
         public override bool CanUpdateTOC => false;
 
         public override string InteropASIName => "ZZZ_LEXInteropME2.asi";
@@ -32,6 +33,11 @@ namespace LegendaryExplorer.GameInterop.InteropTargets
             throw new NotImplementedException("ME2 has multiple process names, use TryGetProcess");
 
         public override uint GameMessageSignature => 0x02AC00C3;
+
+        public ME2InteropTarget()
+        {
+            ConsoleCommandExecutor = new ConsoleCommandDirectExec(this);
+        }
 
         public override bool TryGetProcess(out Process process)
         {

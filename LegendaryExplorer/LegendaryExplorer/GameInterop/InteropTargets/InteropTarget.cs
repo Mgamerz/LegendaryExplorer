@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using LegendaryExplorer.GameInterop.ConsoleCommandExecutors;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
 
@@ -14,9 +15,8 @@ namespace LegendaryExplorer.GameInterop.InteropTargets
     public abstract class InteropTarget
     {
         public event Action<string> GameReceiveMessage;
-        private const string ExecFileName = "lexinterop";
         public abstract MEGame Game { get; }
-        public abstract bool CanExecuteConsoleCommands { get; }
+        protected abstract IConsoleCommandExecutor ConsoleCommandExecutor { get; }
         public abstract bool CanUpdateTOC { get; }
         public abstract string InteropASIName { get; }
         /// <summary>
@@ -44,19 +44,14 @@ namespace LegendaryExplorer.GameInterop.InteropTargets
             ExecuteConsoleCommands(commands.AsEnumerable());
         public void ExecuteConsoleCommands(IEnumerable<string> commands)
         {
-            if (CanExecuteConsoleCommands && TryGetProcess(out Process gameProcess))
+            if (ConsoleCommandExecutor is not null)
             {
-                ExecuteConsoleCommands(gameProcess.MainWindowHandle, commands);
+                ConsoleCommandExecutor.ExecuteConsoleCommands(commands);
             }
-        }
-
-        public void ExecuteConsoleCommands(IntPtr hWnd, params string[] commands) => ExecuteConsoleCommands(hWnd, commands.AsEnumerable());
-        public void ExecuteConsoleCommands(IntPtr hWnd, IEnumerable<string> commands)
-        {
-            string execFilePath = Path.Combine(MEDirectories.GetDefaultGamePath(Game), "Binaries", ExecFileName);
-
-            File.WriteAllText(execFilePath, string.Join(Environment.NewLine, commands));
-            GameController.DirectExecuteConsoleCommand(hWnd, $"exec {ExecFileName}");
+            else
+            {
+                Debug.WriteLine($"No console command executor assigned for game {Game}!");
+            }
         }
 
         public bool IsGameInstalled() => MEDirectories.GetExecutablePath(Game) is string exePath && File.Exists(exePath);
