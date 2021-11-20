@@ -5,7 +5,7 @@ using PropertyChanged;
 namespace LegendaryExplorerCore.Unreal.Classes
 {
     [AddINotifyPropertyChangedInterface]
-    public class Bio2DACell 
+    public class Bio2DACell
     {
         private readonly IMEPackage Pcc;
 
@@ -18,6 +18,23 @@ namespace LegendaryExplorerCore.Unreal.Classes
         [AlsoNotifyFor(nameof(DisplayableValue))]
         public NameReference NameValue { get; set; }
 
+        #region DO NOT REMOVE THESE - THEY ARE WEAVED BY FODY
+        private void OnIntValueChanged()
+        {
+            Type = Bio2DADataType.TYPE_INT;
+        }
+
+        private void OnFloatValueChanged()
+        {
+            Type = Bio2DADataType.TYPE_FLOAT;
+        }
+
+        private void OnNameValueChanged()
+        {
+            Type = Bio2DADataType.TYPE_NAME;
+        }
+        #endregion
+
         public int Offset { get; }
         public bool IsModified { get; set; }
 
@@ -28,7 +45,7 @@ namespace LegendaryExplorerCore.Unreal.Classes
             TYPE_FLOAT = 2
         }
 
-        public Bio2DADataType Type { get; }
+        public Bio2DADataType Type { get; private set; }
 
         private Bio2DACell(Bio2DADataType type, int offset, IMEPackage pcc = null)
         {

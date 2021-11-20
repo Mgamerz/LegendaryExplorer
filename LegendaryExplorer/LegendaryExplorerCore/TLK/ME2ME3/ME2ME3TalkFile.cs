@@ -5,13 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.IO;
+using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.TLK.ME1;
 using static LegendaryExplorerCore.TLK.ME1.ME1TalkFile;
 
 namespace LegendaryExplorerCore.TLK.ME2ME3
 {
-    public class TalkFile
+    public class TalkFile : ITalkFile
     {
         public struct TLKHeader
         {
@@ -49,12 +51,17 @@ namespace LegendaryExplorerCore.TLK.ME2ME3
             }
         }
 
+        /// <summary>
+        /// The localization of this TLK.
+        /// </summary>
+        public MELocalization Localization { get; set; }
+
         public TLKHeader Header;
         private Dictionary<int, string> MaleStringRefsTable;
         private Dictionary<int, string> FemaleStringRefsTable;
-        public List<TLKStringRef> StringRefs;
+        public List<TLKStringRef> StringRefs { get; set; }
         public string name;
-        public string path;
+        public string FilePath;
 
         public delegate void ProgressChangedEventHandler(int percentProgress);
         public event ProgressChangedEventHandler ProgressChanged;
@@ -70,8 +77,10 @@ namespace LegendaryExplorerCore.TLK.ME2ME3
         /// <param name="fileName"></param>
         public void LoadTlkData(string fileName)
         {
-            path = fileName;
+            FilePath = fileName;
             name = Path.GetFileNameWithoutExtension(fileName);
+            Localization = MEDirectories.GetLocalizationFromFileName(fileName);
+
             /* **************** STEP ONE ****************
              *          -- load TLK file header --
              * 
@@ -195,7 +204,7 @@ namespace LegendaryExplorerCore.TLK.ME2ME3
             r.Close();
         }
 
-        public string findDataById(int strRefID, bool withFileName = false, bool returnNullIfNotFound = false, bool noQuotes = false, bool male = true)
+        public string FindDataById(int strRefID, bool withFileName = false, bool returnNullIfNotFound = false, bool noQuotes = false, bool male = true)
         {
             string data;
             if (male && MaleStringRefsTable.TryGetValue(strRefID, out data) || !male && FemaleStringRefsTable.TryGetValue(strRefID, out data))
@@ -215,10 +224,24 @@ namespace LegendaryExplorerCore.TLK.ME2ME3
         }
 
         /// <summary>
-        /// Writes data stored in memory to an appriopriate text format.
+        /// Find the matching string id for the specified string. Returns -1 if not found.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="male">If the search should looking in the male or female table. The male table is the main one.</param>
+        /// <returns></returns>
+        public int FindIdByData(string value, bool male = true)
+        {
+            var refs = male ? MaleStringRefsTable : FemaleStringRefsTable;
+            var matching = refs.FirstOrDefault(x => x.Value == value);
+            if (matching.Value != null) return matching.Key;
+            return -1;
+        }
+
+        /// <summary>
+        /// Writes data stored in memory to an XML file. If the file exists, it will be deleted.
         /// </summary>
         /// <param name="fileName"></param>
-        public void DumpToFile(string fileName)
+        public void SaveToXML(string fileName)
         {
             File.Delete(fileName);
             /* for now, it's better not to sort, to preserve original order */
@@ -345,7 +368,7 @@ namespace LegendaryExplorerCore.TLK.ME2ME3
         /// <summary>
         /// If the TLK instance has been modified by the ReplaceString method.
         /// </summary>
-        public bool IsModified { get; private set; }
+        public bool IsModified { get; set; }
 
         /// <summary>
         /// Replaces a string in the list of StringRefs. Does not work for Female strings as they share the same string ID (all instances will be replaced)

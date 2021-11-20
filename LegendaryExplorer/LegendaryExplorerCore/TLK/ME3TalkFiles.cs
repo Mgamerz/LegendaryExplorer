@@ -19,12 +19,12 @@ namespace LegendaryExplorerCore.TLK
             }
         }
 
-        public static string findDataById(int strRefID, bool withFileName = false)
+        public static string FindDataById(int strRefID, bool withFileName = false)
         {
             string s = "No Data";
             foreach (TalkFile tlk in tlkList)
             {
-                s = tlk.findDataById(strRefID, withFileName);
+                s = tlk.FindDataById(strRefID, withFileName);
                 if (s != "No Data")
                 {
                     return s;

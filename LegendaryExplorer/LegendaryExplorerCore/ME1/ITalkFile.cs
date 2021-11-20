@@ -2,6 +2,6 @@
 {
     //public interface ITalkFile
     //{
-    //    string findDataById(int strRefID, bool withFileName = false);
+    //    string FindDataById(int strRefID, bool withFileName = false);
     //}
 }

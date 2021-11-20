@@ -975,6 +975,25 @@ namespace LegendaryExplorerCore.Packages
         }
 
         /// <summary>
+        /// Gets the property flags for this export. Returns null if this export does not have stack. Only 
+        /// </summary>
+        /// <returns></returns>
+        public bool SetPropertyFlags(EPropertyFlags flags)
+        {
+            if (FileRef.Platform != MEPackage.GamePlatform.PC) throw new Exception("Cannot call SetPropertyFlags() on non PC platform");
+            if (HasStack)
+            {
+                // This might be able to be optimized. Have to go through .Data as it needs to call the side effects
+                var data = Data;
+                data.OverwriteRange(0x18, BitConverter.GetBytes((UInt64)flags));
+                Data = data;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Gets preprops binary, properties, and binary, all without having to do multiple passes on the export
         /// </summary>
         /// <returns></returns>

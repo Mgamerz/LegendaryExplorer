@@ -370,5 +370,80 @@ namespace LegendaryExplorerCore.GameFilesystem
                 _ => throw new ArgumentOutOfRangeException(nameof(game), game, null),
             };
         }
+
+        /// <summary>
+        /// Attempts to determine the localization of the given filepath. Localizations end with either LOC_[LANG] or just _[LANG].
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public static MELocalization GetLocalizationFromFileName(string filename)
+        {
+            string localizationName = Path.GetFileNameWithoutExtension(filename).ToUpper();
+            if (localizationName.Length > 8)
+            {
+                var loc = localizationName.LastIndexOf("LOC_", StringComparison.OrdinalIgnoreCase);
+                if (loc > 0)
+                {
+                    localizationName = localizationName.Substring(loc);
+                }
+                else
+                {
+                    loc = localizationName.LastIndexOf("_", StringComparison.OrdinalIgnoreCase);
+                    if (loc > 0 && localizationName.Length > loc + 1)
+                    {
+                        // End of file might be RA, like Startup_RA, or salarian_ss_FR.pcc
+                        localizationName = localizationName.Substring(loc + 1);
+                    }
+                }
+            }
+
+            // Combined basegame startup files don't use the _LOC_ extension.
+            // ME1/LE1 files also don't always adhere to this...
+            switch (localizationName)
+            {
+                case "DE":
+                case "GE":
+                case "DEU":
+                case "LOC_DEU":
+                case "LOC_DE":
+                    return  MELocalization.DEU;
+                case "ES":
+                case "ESN":
+                case "LOC_ESN":
+                    return  MELocalization.ESN;
+                case "FR":
+                case "FE":
+                case "FRA":
+                case "LOC_FRA":
+                case "LOC_FR":
+                    return  MELocalization.FRA;
+                case "LOC_INT":
+                    return  MELocalization.INT;
+                case "IT":
+                case "IE":
+                case "ITA":
+                case "LOC_ITA":
+                case "LOC_IT":
+                    return  MELocalization.ITA;
+                case "JA":
+                case "JPN":
+                case "LOC_JPN":
+                    return  MELocalization.JPN;
+                case "PL":
+                case "PLPC":
+                case "LOC_POL":
+                case "LOC_PLPC":
+                case "LOC_PL":
+                    return  MELocalization.POL;
+                case "RA":
+                case "RU":
+                case "RUS":
+                case "LOC_RUS":
+                case "LOC_RA":
+                    return  MELocalization.RUS;
+                default:
+                    return  MELocalization.None;
+            }
+        }
     }
 }

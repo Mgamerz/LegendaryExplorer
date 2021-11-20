@@ -22,7 +22,7 @@ namespace LegendaryExplorerCore.ME1
             }
         }
 
-        public static string findDataById(int strRefID, IMEPackage package, bool withFileName = false)
+        public static string FindDataById(int strRefID, IMEPackage package, bool withFileName = false)
         {
             string s = "No Data";
 
@@ -31,7 +31,7 @@ namespace LegendaryExplorerCore.ME1
             {
                 foreach (ME1TalkFile tlk in package.LocalTalkFiles)
                 {
-                    s = tlk.findDataById(strRefID, withFileName);
+                    s = tlk.FindDataById(strRefID, withFileName);
                     if (s != "No Data")
                     {
                         return s;
@@ -42,7 +42,7 @@ namespace LegendaryExplorerCore.ME1
             //Look in loaded list
             foreach (ME1TalkFile tlk in tlkList)
             {
-                s = tlk.findDataById(strRefID, withFileName);
+                s = tlk.FindDataById(strRefID, withFileName);
                 if (s != "No Data")
                 {
                     return s;

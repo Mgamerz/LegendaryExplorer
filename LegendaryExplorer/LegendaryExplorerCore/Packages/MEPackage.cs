@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LegendaryExplorerCore.Compression;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Gammtek.IO;
 using LegendaryExplorerCore.Helpers;
 using LegendaryExplorerCore.Memory;
@@ -606,52 +607,7 @@ namespace LegendaryExplorerCore.Packages
 
             if (filePath != null)
             {
-
-                string localizationName = Path.GetFileNameWithoutExtension(filePath).ToUpper();
-                if (localizationName.Length > 8)
-                {
-                    var loc = localizationName.LastIndexOf("LOC_", StringComparison.OrdinalIgnoreCase);
-                    if (loc > 0)
-                    {
-                        localizationName = localizationName.Substring(loc);
-                    }
-                }
-                switch (localizationName)
-                {
-                    case "LOC_DEU":
-                    case "LOC_DE":
-                        Localization = MELocalization.DEU;
-                        break;
-                    case "LOC_ESN":
-                        Localization = MELocalization.ESN;
-                        break;
-                    case "LOC_FRA":
-                    case "LOC_FR":
-                        Localization = MELocalization.FRA;
-                        break;
-                    case "LOC_INT":
-                        Localization = MELocalization.INT;
-                        break;
-                    case "LOC_ITA":
-                    case "LOC_IT":
-                        Localization = MELocalization.ITA;
-                        break;
-                    case "LOC_JPN":
-                        Localization = MELocalization.JPN;
-                        break;
-                    case "LOC_POL":
-                    case "LOC_PLPC":
-                    case "LOC_PL":
-                        Localization = MELocalization.POL;
-                        break;
-                    case "LOC_RUS":
-                    case "LOC_RA":
-                        Localization = MELocalization.RUS;
-                        break;
-                    default:
-                        Localization = MELocalization.None;
-                        break;
-                }
+                Localization = MEDirectories.GetLocalizationFromFileName(filePath);
             }
 
             EntryLookupTable = new CaseInsensitiveDictionary<IEntry>(ExportCount + ImportCount);
