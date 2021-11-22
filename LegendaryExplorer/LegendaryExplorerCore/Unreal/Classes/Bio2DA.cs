@@ -135,6 +135,18 @@ namespace LegendaryExplorerCore.Unreal.Classes
                 };
             }
 
+            // Populate null cells with TYPE_NULL cells
+            for (int row = 0; row < RowCount; row++)
+            {
+                for (int col = 0; col < ColumnCount; col++)
+                {
+                    if (this[row, col] == null)
+                    {
+                        this[row, col] = new Bio2DACell();
+                    }
+                }
+            }
+
             IsIndexed = binary.IsIndexed;
         }
 
@@ -182,7 +194,7 @@ namespace LegendaryExplorerCore.Unreal.Classes
                 for (int colindex = 0; colindex < ColumnCount; colindex++)
                 {
                     Bio2DACell cell = Cells[rowindex, colindex];
-                    if (cell != null)
+                    if (cell != null && cell.Type != Bio2DACell.Bio2DADataType.TYPE_NULL)
                     {
                         int index = (rowindex * ColumnCount) + colindex;
                         binary.Cells.Add(index, cell.Type switch
@@ -251,7 +263,7 @@ namespace LegendaryExplorerCore.Unreal.Classes
             {
                 return existing;
             }
-         
+
             mappedRowNames[rowName] = _rowNames.Count; // 0 based
             _rowNames.Add(rowName);
             return _rowNames.Count - 1;

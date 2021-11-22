@@ -9,6 +9,7 @@ namespace LegendaryExplorerCore.Unreal.Classes
     {
         private readonly IMEPackage Pcc;
 
+        // Fody weaves setters for these below
         [AlsoNotifyFor(nameof(DisplayableValue))]
         public int IntValue { get; set; }
 
@@ -36,13 +37,22 @@ namespace LegendaryExplorerCore.Unreal.Classes
         #endregion
 
         public int Offset { get; }
+
+        /// <summary>
+        /// If the 2DA has been modified
+        /// </summary>
         public bool IsModified { get; set; }
 
         public enum Bio2DADataType : byte
         {
             TYPE_INT = 0,
             TYPE_NAME = 1,
-            TYPE_FLOAT = 2
+            TYPE_FLOAT = 2,
+
+            /// <summary>
+            /// Not actual type. Used to allow us to know a node should be considered null during serialization.
+            /// </summary>
+            TYPE_NULL = 5
         }
 
         public Bio2DADataType Type { get; private set; }
@@ -70,6 +80,11 @@ namespace LegendaryExplorerCore.Unreal.Classes
         }
 
         /// <summary>
+        /// Generates a new TYPE_NULL Bio2DACell. Cells of this type will not be serialized.
+        /// </summary>
+        public Bio2DACell() : this(Bio2DADataType.TYPE_NULL, 0) {}
+
+        /// <summary>
         /// This is a string because that's what the UI passes here
         /// </summary>
         public string NameIndex
@@ -95,6 +110,7 @@ namespace LegendaryExplorerCore.Unreal.Classes
                     Bio2DADataType.TYPE_INT => IntValue.ToString(),
                     Bio2DADataType.TYPE_NAME => NameValue.Instanced,
                     Bio2DADataType.TYPE_FLOAT => FloatValue.ToString(),
+                    Bio2DADataType.TYPE_NULL => "",
                     _ => $"Unknown type {Type}"
                 };
             set
@@ -120,6 +136,9 @@ namespace LegendaryExplorerCore.Unreal.Classes
                         }
                         break;
                     case Bio2DADataType.TYPE_NAME: //This is set through ValueAsName
+                        throw new Exception("Bio2DA: Cannot set Name through DisplayableValue. Use NameValue instead.");
+                    case Bio2DADataType.TYPE_NULL:
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -128,27 +147,13 @@ namespace LegendaryExplorerCore.Unreal.Classes
 
         public override string ToString() => DisplayableValue;
 
-        public int ValueAsName
-        {
-            get => Pcc.findName(NameValue.Name);
-            set
-            {
-                if (value != ValueAsName)
-                {
-                    NameValue = Pcc.GetNameEntry(value);
-                    IsModified = true;
-                    //OnPropertyChanged(nameof(ValueAsName));
-                }
-            }
-
-        }
-
         internal string GetTypeString() =>
             Type switch
             {
                 Bio2DADataType.TYPE_FLOAT => "Float",
                 Bio2DADataType.TYPE_NAME => "Name",
                 Bio2DADataType.TYPE_INT => "Integer",
+                Bio2DADataType.TYPE_NULL => "NULL",
                 _ => "Unknown type"
             };
     }

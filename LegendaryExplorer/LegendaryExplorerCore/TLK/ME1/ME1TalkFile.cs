@@ -163,7 +163,7 @@ namespace LegendaryExplorerCore.TLK.ME1
             List<TLKStringRef> stringRefs = new List<TLKStringRef>(entryCount);
             for (int i = 0; i < entryCount; i++)
             {
-                stringRefs[i] = new TLKStringRef(r, true);
+                stringRefs.Add(new TLKStringRef(r, true));
             }
 
             //Huffman tree

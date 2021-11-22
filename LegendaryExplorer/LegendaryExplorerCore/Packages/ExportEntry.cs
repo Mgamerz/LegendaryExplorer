@@ -82,7 +82,7 @@ namespace LegendaryExplorerCore.Packages
             }
 
             binary?.WriteTo(ms, file);
-
+            _generationNetObjectCounts = new int[0];
             _data = ms.ToArray();
             DataSize = _data.Length;
         }
