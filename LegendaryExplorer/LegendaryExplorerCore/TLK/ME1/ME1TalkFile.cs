@@ -98,42 +98,54 @@ namespace LegendaryExplorerCore.TLK.ME1
         public string FindDataById(int strRefID, bool withFileName = false, bool returnNullIfNotFound = false, bool noQuotes = false, bool male = true)
         {
             string data;
-            if (StringRefsTable.TryGetValue(strRefID, out data))
+            if (StringRefsTable != null)
             {
-                if (noQuotes)
-                    return data;
-
-                var retdata = "\"" + data + "\"";
-                if (withFileName && FilePath != null)
+                if (StringRefsTable.TryGetValue(strRefID, out data))
                 {
-                    retdata += " (" + Path.GetFileName(FilePath) + ")";
+                    if (noQuotes)
+                        return data;
+
+                    var retdata = "\"" + data + "\"";
+                    if (withFileName && FilePath != null)
+                    {
+                        retdata += " (" + Path.GetFileName(FilePath) + ")";
+                    }
+
+                    return retdata;
                 }
-                return retdata;
+            }
+            else
+            {
+                foreach (var sref in StringRefs)
+                {
+                    if (sref.StringID == strRefID)
+                        return sref.Data;
+                }
             }
 
             return returnNullIfNotFound ? null : "No Data";
-        }
+            }
 
-        /// <summary>
-        /// Find the matching string id for the specified string. Returns -1 if not found. The male parameter is not used.
-        /// </summary>
-        /// <param name="tf"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public int FindIdByData(string value, bool male = true)
-        {
-            // Male is not used
-            var matching = StringRefs.FirstOrDefault(x => x.Data == value);
-            if (matching != null) return matching.StringID;
-            return -1;
-        }
+            /// <summary>
+            /// Find the matching string id for the specified string. Returns -1 if not found. The male parameter is not used.
+            /// </summary>
+            /// <param name="tf"></param>
+            /// <param name="value"></param>
+            /// <returns></returns>
+            public int FindIdByData(string value, bool male = true)
+            {
+                // Male is not used
+                var matching = StringRefs.FirstOrDefault(x => x.Data == value);
+                if (matching != null) return matching.StringID;
+                return -1;
+            }
 
 
-        #region IEquatable
-        public bool Equals(ME1TalkFile other)
-        {
-            return (other?.UIndex == UIndex && other.FilePath == FilePath);
-        }
+            #region IEquatable
+            public bool Equals(ME1TalkFile other)
+            {
+                return (other?.UIndex == UIndex && other.FilePath == FilePath);
+            }
 
         public override bool Equals(object obj)
         {
@@ -151,7 +163,67 @@ namespace LegendaryExplorerCore.TLK.ME1
         #endregion
 
         #region Load Data
+
         private void LoadTlkData(IMEPackage pcc)
+        {
+            var r = new EndianReader(pcc.GetUExport(UIndex).GetReadOnlyBinaryStream(), Encoding.Unicode)
+            {
+                Endian = pcc.Endian
+            };
+            //hashtable
+            int entryCount = r.ReadInt32();
+            StringRefs = new List<TLKStringRef>(entryCount);
+            for (int i = 0; i < entryCount; i++)
+            {
+                StringRefs.Add(new TLKStringRef(r, true));
+            }
+
+            //Huffman tree
+            int nodeCount = r.ReadInt32();
+            nodes = new List<HuffmanNode>(nodeCount);
+            for (int i = 0; i < nodeCount; i++)
+            {
+                bool leaf = r.ReadBoolean();
+                if (leaf)
+                {
+                    nodes.Add(new HuffmanNode(r.ReadChar()));
+                }
+                else
+                {
+                    nodes.Add(new HuffmanNode(r.ReadInt16(), r.ReadInt16()));
+                }
+            }
+            //TraverseHuffmanTree(nodes[0], new List<bool>());
+
+            //encoded data
+            int stringCount = r.ReadInt32();
+            byte[] data = new byte[r.BaseStream.Length - r.BaseStream.Position];
+            r.Read(data, 0, data.Length);
+            var bits = new BitArray(data);
+
+            //decompress encoded data with huffman tree
+            int offset = 4;
+            var rawStrings = new List<string>(stringCount);
+            while (offset * 8 < bits.Length)
+            {
+                int size = BitConverter.ToInt32(data, offset);
+                offset += 4;
+                string s = GetString(offset * 8, bits);
+                offset += size + 4;
+                rawStrings.Add(s);
+            }
+
+            //associate StringIDs with strings
+            foreach (TLKStringRef strRef in StringRefs)
+            {
+                if (strRef.Flags == 1)
+                {
+                    strRef.Data = rawStrings[strRef.Index];
+                }
+            }
+        }
+
+        private void LoadTlkDataDICTIONARY(IMEPackage pcc)
         {
             var r = new EndianReader(pcc.GetUExport(UIndex).GetReadOnlyBinaryStream(), Encoding.Unicode)
             {
