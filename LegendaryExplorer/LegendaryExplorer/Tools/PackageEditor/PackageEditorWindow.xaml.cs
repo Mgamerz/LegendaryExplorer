@@ -1544,7 +1544,7 @@ namespace LegendaryExplorer.Tools.PackageEditor
                             if (d.ShowDialog() == true)
                             {
                                 var exportingTalk = new ME1TalkFile(exp);
-                                exportingTalk.saveToFile(d.FileName);
+                                exportingTalk.SaveToXML(d.FileName);
                                 MessageBox.Show("Done");
                             }
                             break;

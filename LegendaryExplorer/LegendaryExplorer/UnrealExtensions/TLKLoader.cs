@@ -189,11 +189,11 @@ namespace LegendaryExplorer.UnrealExtensions
         public static void SaveTLKList(MEGame game = MEGame.Unknown)
         {
             if (game == MEGame.Unknown || game == MEGame.ME1) File.WriteAllText(LoadedTLKsPathME1, JsonConvert.SerializeObject(ME1TalkFiles.tlkList.Select(x => (uindex: x.UIndex, x.FilePath))));
-            if (game == MEGame.Unknown || game == MEGame.ME2) File.WriteAllText(LoadedTLKsPathME2, JsonConvert.SerializeObject(ME2TalkFiles.tlkList.Select(x => x.path)));
-            if (game == MEGame.Unknown || game == MEGame.ME3) File.WriteAllText(LoadedTLKsPathME3, JsonConvert.SerializeObject(ME3TalkFiles.tlkList.Select(x => x.path)));
+            if (game == MEGame.Unknown || game == MEGame.ME2) File.WriteAllText(LoadedTLKsPathME2, JsonConvert.SerializeObject(ME2TalkFiles.tlkList.Select(x => x.FilePath)));
+            if (game == MEGame.Unknown || game == MEGame.ME3) File.WriteAllText(LoadedTLKsPathME3, JsonConvert.SerializeObject(ME3TalkFiles.tlkList.Select(x => x.FilePath)));
             if (game == MEGame.Unknown || game == MEGame.LE1) File.WriteAllText(LoadedTLKsPathLE1, JsonConvert.SerializeObject(LE1TalkFiles.tlkList.Select(x => (uindex: x.UIndex, x.FilePath))));
-            if (game == MEGame.Unknown || game == MEGame.LE2) File.WriteAllText(LoadedTLKsPathLE2, JsonConvert.SerializeObject(LE2TalkFiles.tlkList.Select(x => x.path)));
-            if (game == MEGame.Unknown || game == MEGame.LE3) File.WriteAllText(LoadedTLKsPathLE3, JsonConvert.SerializeObject(LE3TalkFiles.tlkList.Select(x => x.path)));
+            if (game == MEGame.Unknown || game == MEGame.LE2) File.WriteAllText(LoadedTLKsPathLE2, JsonConvert.SerializeObject(LE2TalkFiles.tlkList.Select(x => x.FilePath)));
+            if (game == MEGame.Unknown || game == MEGame.LE3) File.WriteAllText(LoadedTLKsPathLE3, JsonConvert.SerializeObject(LE3TalkFiles.tlkList.Select(x => x.FilePath)));
         }
     }
 }

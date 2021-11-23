@@ -89,8 +89,8 @@ namespace LegendaryExplorerCore.TLK.ME1
         /// Amount of strings in this Talk file
         /// </summary>
         public int StringRefCount => StringRefsTable.Count;
-        
- 
+
+
         #endregion
 
         //ITalkFile
@@ -349,7 +349,6 @@ namespace LegendaryExplorerCore.TLK.ME1
 
         private static void WriteXML(Dictionary<int, string> stringRefTable, string name, XmlTextWriter writer)
         {
-
             writer.Formatting = Formatting.Indented;
             writer.Indentation = 4;
 
@@ -357,26 +356,47 @@ namespace LegendaryExplorerCore.TLK.ME1
             writer.WriteStartElement("tlkFile");
             writer.WriteAttributeString("Name", name);
 
-            foreach (var tlkStringRef in stringRefTable.OrderBy(x=>x.Key))
+            foreach (var tlkStringRef in stringRefTable.OrderBy(x => x.Key))
             {
-                var flag = tlkStringRef.Value == null ? 0 : 1;
-                writer.WriteStartElement("string");
-                writer.WriteStartElement("id");
-                writer.WriteValue(tlkStringRef.Key);
-                writer.WriteEndElement(); // </id>
-                writer.WriteStartElement("flags");
-                writer.WriteValue(flag);
-                writer.WriteEndElement(); // </flags>
-                if (flag != 1)
-                    writer.WriteElementString("data", "-1");
-                else
-                    writer.WriteElementString("data", tlkStringRef.Value);
-                writer.WriteEndElement(); // </string>
+                WriteString(writer, tlkStringRef.Key, tlkStringRef.Value);
             }
             writer.WriteEndElement(); // </tlkFile>
         }
 
-        public static string TLKtoXmlstring(string name, Dictionary<int, string> tlkStringRefTable)
+        private static void WriteXML(List<TLKStringRef> strings, string name, XmlTextWriter writer)
+        {
+            writer.Formatting = Formatting.Indented;
+            writer.Indentation = 4;
+
+            writer.WriteStartDocument();
+            writer.WriteStartElement("tlkFile");
+            writer.WriteAttributeString("Name", name);
+
+            foreach (var tlkStringRef in strings.OrderBy(x => x.CalculatedID))
+            {
+                WriteString(writer, tlkStringRef.StringID, tlkStringRef.Data);
+            }
+            writer.WriteEndElement(); // </tlkFile>
+        }
+
+        private static void WriteString(XmlTextWriter writer, int id, string value)
+        {
+            var flag = value == null ? 0 : 1;
+            writer.WriteStartElement("string");
+            writer.WriteStartElement("id");
+            writer.WriteValue(id);
+            writer.WriteEndElement(); // </id>
+            writer.WriteStartElement("flags");
+            writer.WriteValue(flag);
+            writer.WriteEndElement(); // </flags>
+            if (flag != 1)
+                writer.WriteElementString("data", "-1");
+            else
+                writer.WriteElementString("data", value);
+            writer.WriteEndElement(); // </string>
+        }
+
+        public static string TLKtoXmlstring(string name, List<TLKStringRef> tlkStringRefTable)
         {
             var InputTLK = new StringBuilder();
             using var stringWriter = new StringWriter(InputTLK);

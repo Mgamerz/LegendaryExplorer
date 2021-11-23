@@ -117,14 +117,14 @@ namespace LegendaryExplorer.Tools.AssetDatabase.Scanners
         {
             if (fileref.Game == MEGame.ME1)
             {
-                line.Line = ME1TalkFiles.findDataById(line.StrRef, fileref);
+                line.Line = ME1TalkFiles.FindDataById(line.StrRef, fileref);
                 if (line.Line == "No Data" || line.Line == "\"\"" ||
                     line.Line == "\" \"" || line.Line == " ")
                     return false;
             }
             else if (fileref.Game == MEGame.LE1)
             {
-                line.Line = LE1TalkFiles.findDataById(line.StrRef, fileref);
+                line.Line = LE1TalkFiles.FindDataById(line.StrRef, fileref);
                 if (line.Line == "No Data" || line.Line == "\"\"" ||
                     line.Line == "\" \"" || line.Line == " ")
                     return false;

@@ -470,7 +470,7 @@ namespace LegendaryExplorer.Tools.InterpEditor
                 foreach (var trackKey in trackKeys)
                 {
                     int strRef = subtitleData?[keyindex]?.GetProp<IntProperty>("nStrRefID");
-                    Keys.Add(new Key(trackKey.GetProp<FloatProperty>("fTime"), ME1TalkFiles.findDataById(strRef, Export.FileRef)));
+                    Keys.Add(new Key(trackKey.GetProp<FloatProperty>("fTime"), ME1TalkFiles.FindDataById(strRef, Export.FileRef)));
                 }
             }
         }

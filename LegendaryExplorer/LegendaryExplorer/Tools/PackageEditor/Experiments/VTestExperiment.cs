@@ -22,6 +22,7 @@ using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Textures;
+using LegendaryExplorerCore.TLK;
 using LegendaryExplorerCore.TLK.ME1;
 using LegendaryExplorerCore.Unreal;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
@@ -3613,42 +3614,42 @@ namespace LegendaryExplorer.Tools.PackageEditor.Experiments
             {
                 case "RA":
                 case "RU":
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338464, 1, "Загрузка данных"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338465, 1, "Настройка музыки"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338466, 1, "Отключить музыку"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338467, 1, "Включить музыку"));
+                    stringRefs.Add(new TLKStringRef(338464, 1, "Загрузка данных"));
+                    stringRefs.Add(new TLKStringRef(338465, 1, "Настройка музыки"));
+                    stringRefs.Add(new TLKStringRef(338466, 1, "Отключить музыку"));
+                    stringRefs.Add(new TLKStringRef(338467, 1, "Включить музыку"));
                     break;
                 case "ES":
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338465, 1, "Configuración de Música"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338466, 1, "Desactivar Música"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338467, 1, "Activar Música"));
+                    stringRefs.Add(new TLKStringRef(338465, 1, "Configuración de Música"));
+                    stringRefs.Add(new TLKStringRef(338466, 1, "Desactivar Música"));
+                    stringRefs.Add(new TLKStringRef(338467, 1, "Activar Música"));
                     break;
                 case "IT":
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338465, 1, "Music Setting"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338466, 1, "Disable Music"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338467, 1, "Enable Music"));
+                    stringRefs.Add(new TLKStringRef(338465, 1, "Music Setting"));
+                    stringRefs.Add(new TLKStringRef(338466, 1, "Disable Music"));
+                    stringRefs.Add(new TLKStringRef(338467, 1, "Enable Music"));
                     break;
                 case "PL":
                 case "PLPC":
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338465, 1, "Music Setting"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338466, 1, "Disable Music"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338467, 1, "Enable Music"));
+                    stringRefs.Add(new TLKStringRef(338465, 1, "Music Setting"));
+                    stringRefs.Add(new TLKStringRef(338466, 1, "Disable Music"));
+                    stringRefs.Add(new TLKStringRef(338467, 1, "Enable Music"));
                     break;
                 case "FR":
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338465, 1, "Music Setting"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338466, 1, "Disable Music"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338467, 1, "Enable Music"));
+                    stringRefs.Add(new TLKStringRef(338465, 1, "Music Setting"));
+                    stringRefs.Add(new TLKStringRef(338466, 1, "Disable Music"));
+                    stringRefs.Add(new TLKStringRef(338467, 1, "Enable Music"));
                     break;
                 case "DE":
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338465, 1, "Music Setting"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338466, 1, "Disable Music"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338467, 1, "Enable Music"));
+                    stringRefs.Add(new TLKStringRef(338465, 1, "Music Setting"));
+                    stringRefs.Add(new TLKStringRef(338466, 1, "Disable Music"));
+                    stringRefs.Add(new TLKStringRef(338467, 1, "Enable Music"));
                     break;
                 case "JA":
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338464, 1, "Downloading Data"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338465, 1, "Music Setting"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338466, 1, "Disable Music"));
-                    stringRefs.Add(new ME1TalkFile.TLKStringRef(338467, 1, "Enable Music"));
+                    stringRefs.Add(new TLKStringRef(338464, 1, "Downloading Data"));
+                    stringRefs.Add(new TLKStringRef(338465, 1, "Music Setting"));
+                    stringRefs.Add(new TLKStringRef(338466, 1, "Disable Music"));
+                    stringRefs.Add(new TLKStringRef(338467, 1, "Enable Music"));
                     break;
             }
 

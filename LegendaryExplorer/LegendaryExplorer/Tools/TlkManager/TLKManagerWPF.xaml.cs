@@ -54,11 +54,11 @@ namespace LegendaryExplorer.Tools.TlkManagerNS
             LE2TLKItems.CollectionChanged += LE2CollectionChangedEventHandler;
             LE3TLKItems.CollectionChanged += LE3CollectionChangedEventHandler;
             ME1TLKItems.AddRange(ME1TalkFiles.tlkList.Select(x => new LoadedTLK(x.FilePath, x.UIndex, x.Name, true)));
-            ME2TLKItems.AddRange(ME2TalkFiles.tlkList.Select(x => new LoadedTLK(x.path, true)));
-            ME3TLKItems.AddRange(ME3TalkFiles.tlkList.Select(x => new LoadedTLK(x.path, true)));
+            ME2TLKItems.AddRange(ME2TalkFiles.tlkList.Select(x => new LoadedTLK(x.FilePath, true)));
+            ME3TLKItems.AddRange(ME3TalkFiles.tlkList.Select(x => new LoadedTLK(x.FilePath, true)));
             LE1TLKItems.AddRange(LE1TalkFiles.tlkList.Select(x => new LoadedTLK(x.FilePath, x.UIndex, x.Name, true)));
-            LE2TLKItems.AddRange(LE2TalkFiles.tlkList.Select(x => new LoadedTLK(x.path, true)));
-            LE3TLKItems.AddRange(LE3TalkFiles.tlkList.Select(x => new LoadedTLK(x.path, true)));
+            LE2TLKItems.AddRange(LE2TalkFiles.tlkList.Select(x => new LoadedTLK(x.FilePath, true)));
+            LE3TLKItems.AddRange(LE3TalkFiles.tlkList.Select(x => new LoadedTLK(x.FilePath, true)));
 
         }
 
@@ -1113,12 +1113,12 @@ namespace LegendaryExplorer.Tools.TlkManagerNS
 
             return game switch
             {
-                MEGame.ME1 => ME1TalkFiles.findDataById(stringRefID, me1Package),
-                MEGame.ME2 => ME2TalkFiles.findDataById(stringRefID),
-                MEGame.ME3 => ME3TalkFiles.findDataById(stringRefID),
-                MEGame.LE1 => LE1TalkFiles.findDataById(stringRefID, me1Package),
-                MEGame.LE2 => LE2TalkFiles.findDataById(stringRefID),
-                MEGame.LE3 => LE3TalkFiles.findDataById(stringRefID),
+                MEGame.ME1 => ME1TalkFiles.FindDataById(stringRefID, me1Package),
+                MEGame.ME2 => ME2TalkFiles.FindDataById(stringRefID),
+                MEGame.ME3 => ME3TalkFiles.FindDataById(stringRefID),
+                MEGame.LE1 => LE1TalkFiles.FindDataById(stringRefID, me1Package),
+                MEGame.LE2 => LE2TalkFiles.FindDataById(stringRefID),
+                MEGame.LE3 => LE3TalkFiles.FindDataById(stringRefID),
                 _ => "UDK String Refs Not Supported"
             };
         }
