@@ -296,15 +296,15 @@ namespace LegendaryExplorerCore.UnrealScript.Compiling
             ScriptPropertiesCompiler.CompileDefault__Object(classAST.DefaultProperties, classExport, ref defaultsExport, packageCache);
             classObj.Defaults = defaultsExport;
 
-            classObj.ComponentNameToDefaultObjectMap.Clear();
-            foreach (Subobject subobject in classAST.DefaultProperties.Statements.OfType<Subobject>())
-            {
-                if (subobject.Class.IsComponent)
-                {
-                    var componentName = NameReference.FromInstancedString(subobject.NameDeclaration.Name);
-                    classObj.ComponentNameToDefaultObjectMap.Add(componentName, pcc.FindExport($"{defaultsExport.InstancedFullPath}.{componentName}"));
-                }
-            }
+            //classObj.ComponentNameToDefaultObjectMap.Clear();
+            //foreach (Subobject subobject in classAST.DefaultProperties.Statements.OfType<Subobject>())
+            //{
+            //    if (subobject.Class.IsComponent)
+            //    {
+            //        var componentName = NameReference.FromInstancedString(subobject.NameDeclaration.Name);
+            //        classObj.ComponentNameToDefaultObjectMap.Add(componentName, pcc.FindExport($"{defaultsExport.InstancedFullPath}.{componentName}"));
+            //    }
+            //}
 
             classExport.WriteBinary(classObj);
         }
@@ -922,7 +922,7 @@ namespace LegendaryExplorerCore.UnrealScript.Compiling
         {
             IMEPackage pcc = parent.FileRef;
 
-            IEntry classEntry = className.CaseInsensitiveEquals("Class") ? null : EntryImporter.EnsureClassIsInFile(pcc, className);
+            IEntry classEntry = className.CaseInsensitiveEquals("Class") ? null : EntryImporter.EnsureClassIsInFile(pcc, className, new RelinkerOptionsPackage());
 
             //reuse trash exports
             if (pcc.TryGetTrash(out ExportEntry trashExport))

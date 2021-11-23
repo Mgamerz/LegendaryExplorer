@@ -41,7 +41,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
         //This is useful for end user when they want to view things in a list for example, but all of the items are of the 
         //same type and are not distinguishable without changing to another export, wasting a lot of time.
         //values are the class of object value being parsed
-        public static readonly string[] ExportToStringConverters = { "LevelStreamingKismet", "StaticMeshComponent", "ParticleSystemComponent", "DecalComponent", "LensFlareComponent" };
+        public static readonly string[] ExportToStringConverters = { "LevelStreamingKismet", "StaticMeshComponent", "ParticleSystemComponent", "DecalComponent", "LensFlareComponent", "AnimNodeSequence" };
         public static readonly string[] IntToStringConverters = { "WwiseEvent", "WwiseBank", "BioSeqAct_PMExecuteTransition", "BioSeqAct_PMExecuteConsequence", "BioSeqAct_PMCheckState", "BioSeqAct_PMCheckConditional", "BioSeqVar_StoryManagerInt",
                                                                 "BioSeqVar_StoryManagerFloat", "BioSeqVar_StoryManagerBool", "BioSeqVar_StoryManagerStateId", "SFXSceneShopNodePlotCheck", "BioWorldInfo" };
         public ObservableCollectionExtended<IndexedName> ParentNameList { get; private set; }
@@ -361,7 +361,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                 var p = new PackageEditorWindow();
                 p.Show();
                 p.LoadFile(CurrentLoadedExport.FileRef.FilePath, op.Value);
-                p.Activate(); //bring to front        
+                p.Activate(); //bring to front
             }
         }
 
@@ -1064,17 +1064,13 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                     break;
                 case ArrayPropertyBase ap:
                     {
-                        var containingType = parent.Property is StructProperty pStructProp ? pStructProp.StructType : parsingExport.ClassName;
-                        if (containingType is "ScriptStruct")
-                        {
-                            containingType = parsingExport.ObjectName;
-                        }
-                        ArrayType at = GlobalUnrealObjectInfo.GetArrayType(parsingExport.FileRef.Game, prop.Name, containingType, parsingExport);
+                        ArrayType at = GlobalUnrealObjectInfo.GetArrayType(parsingExport.FileRef.Game, prop.Name, parent.Property is StructProperty sp ? sp.StructType : parsingExport.ClassName, parsingExport);
 
-                        if (at is ArrayType.Struct or ArrayType.Enum or ArrayType.Object)
+                        if (at == ArrayType.Struct || at == ArrayType.Enum || at == ArrayType.Object)
                         {
                             // Try to get the type of struct array
                             // This code doesn't work for nested structs as the containing class is different
+                            var containingType = parent.Property is StructProperty pStructProp ? pStructProp.StructType : parsingExport.ClassName;
                             PropertyInfo p = GlobalUnrealObjectInfo.GetPropertyInfo(parsingExport.FileRef.Game, prop.Name, containingType);
                             if (p != null)
                             {
@@ -1200,9 +1196,9 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                         var parmName = sp.GetProp<NameProperty>("ParameterName");
                         var parmValue = sp.GetProp<ObjectProperty>("ParameterValue");
 
-                        if (parmName != null && parmValue != null && parmValue.Value != 0)
+                        if (parmName != null && parmValue != null && parmValue.Value != 0 && parsingExport.FileRef.TryGetEntry(parmValue.Value, out var entry))
                         {
-                            parsedValue = $" {parmName}: {parsingExport.FileRef.GetEntry(parmValue.Value).ObjectName.Instanced}";
+                            parsedValue = $" {parmName}: {entry.ObjectName.Instanced}";
                         }
                     }
                     else if (sp.StructType == "TextureParameter")
@@ -1287,11 +1283,14 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                     }
                     else if (sp.StructType == "FireLink" && parsingExport.Game.IsLEGame())
                     {
-                        var destActor = sp.GetProp<StructProperty>("TargetActor").GetProp<ObjectProperty>("Actor");
-                        var destSlot = sp.GetProp<StructProperty>("TargetActor").GetProp<IntProperty>("SlotIdx");
-                        if (destActor.Value != 0 && parsingExport.FileRef.TryGetEntry(destActor.Value, out var entry))
+                        var destActor = sp.GetProp<StructProperty>("TargetActor")?.GetProp<ObjectProperty>("Actor");
+                        if (destActor != null)
                         {
-                            parsedValue = $"-> {entry.ObjectName.Instanced} Slot {destSlot.Value}";
+                            var destSlot = sp.GetProp<StructProperty>("TargetActor")?.GetProp<IntProperty>("SlotIdx");
+                            if (destSlot != null && destActor.Value != 0 && parsingExport.FileRef.TryGetEntry(destActor.Value, out var entry))
+                            {
+                                parsedValue = $"-> {entry.ObjectName.Instanced} Slot {destSlot.Value}";
+                            }
                         }
                     }
                     else if (sp.StructType == "FireLinkItem" && parsingExport.Game.IsLEGame())
@@ -1477,8 +1476,11 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
             switch (exportEntry.ClassName)
             {
                 case "LevelStreamingKismet":
-                    NameProperty prop = exportEntry.GetProperty<NameProperty>("PackageName");
-                    return $"({prop.Value.Instanced})";
+                    {
+                        NameProperty prop = exportEntry.GetProperty<NameProperty>("PackageName");
+                        return $"({prop.Value.Instanced})";
+                    }
+                    break;
                 case "StaticMeshComponent":
                     {
                         ObjectProperty smprop = exportEntry.GetProperty<ObjectProperty>("StaticMesh");
@@ -1517,6 +1519,12 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                                 return $"({smEntry.ObjectName.Instanced})";
                             }
                         }
+                    }
+                    break;
+                case "AnimNodeSequence":
+                    {
+                        NameProperty prop = exportEntry.GetProperty<NameProperty>("AnimSeqName");
+                        return $"({prop?.Value.Instanced ?? "No Name"})";
                     }
                     break;
             }

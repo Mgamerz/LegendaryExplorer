@@ -249,6 +249,7 @@ namespace LegendaryExplorer.Tools.PackageEditor.Experiments
                 pew.IsBusy = true;
                 pew.BusyText = "Applying MorphFace to head mesh...";
                 var morphFace = new BioMorphFace(export);
+                var rop = new RelinkerOptionsPackage();
 
                 // Create a new file containing only the headmesh
                 var tempFilePath = Path.Combine(Path.GetTempPath(), "HeadMeshExport.pcc");
@@ -256,7 +257,7 @@ namespace LegendaryExplorer.Tools.PackageEditor.Experiments
                 MEPackageHandler.CreateAndSavePackage(tempFilePath, export.Game);
                 using var tempFile = MEPackageHandler.OpenMEPackage(tempFilePath);
                 EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneAllDependencies,
-                    morphFace.m_oBaseHead, tempFile, null, true, out var clonedHeadEntry);
+                    morphFace.m_oBaseHead, tempFile, null, true, rop, out var clonedHeadEntry);
                 var clonedHead = clonedHeadEntry as ExportEntry;
                 var appliedHead = morphFace.Apply();
 
@@ -265,7 +266,7 @@ namespace LegendaryExplorer.Tools.PackageEditor.Experiments
                 {
                     var originalMat = export.FileRef.GetEntry(appliedHead.Materials[i].value);
                     EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneAllDependencies,
-                        originalMat, tempFile, null, true, out var clonedMat);
+                        originalMat, tempFile, null, true, rop, out var clonedMat);
                     appliedHead.Materials[i] = new UIndex(clonedMat.UIndex);
                 }
                 clonedHead.WriteBinary(appliedHead);
