@@ -1,34 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal.BinaryConverters;
+using PropertyChanged;
 
 namespace LegendaryExplorerCore.Unreal.Classes
 {
-    public class Bio2DA
+    public class Bio2DA : INotifyPropertyChanged
     {
         public bool IsIndexed = false;
-
-        public Bio2DACell[,] Cells { get; set; }
-
         private List<string> _rowNames;
+        private List<string> _columnNames;
+
+        /// <summary>
+        /// The cell data for this 2DA. Indexing with integers will access this like an array, accessing with strings will access using the row and column names. Cells are mapped via [Row, Column].
+        /// </summary>
+        public Bio2DACell[,] Cells { get; set; }
 
         /// <summary>
         /// List of raw rownames
         /// </summary>
         public IReadOnlyList<string> RowNames => _rowNames;
 
-        private List<string> _columnNames;
         /// <summary>
         /// List of column names
         /// </summary>
         public IReadOnlyList<string> ColumnNames => _columnNames;
 
         /// <summary>
-        /// Replaces _ with __ to avoid AccessKeys when rendering. This list is not updated when a row name changes in RowNames.
+        /// Replaces _ with __ to avoid AccessKeys when rendering. This list is not updated when a row name changes in RowNames or a row is added.
         /// </summary>
         public List<string> RowNamesUI { get; private set; }
 
@@ -63,13 +68,12 @@ namespace LegendaryExplorerCore.Unreal.Classes
         /// </summary>
         public ExportEntry Export;
 
-        public Bio2DA(ExportEntry export)
+        public Bio2DA(ExportEntry export) : this()
         {
             //Console.WriteLine("Loading " + export.ObjectName);
             Export = export;
 
-            _rowNames = new List<string>();
-            RowNamesUI = new List<string>();
+            // GET ROW NAMES
             if (export.ClassName == "Bio2DA")
             {
                 const string rowLabelsVar = "m_sRowLabel";
@@ -85,7 +89,6 @@ namespace LegendaryExplorerCore.Unreal.Classes
                 else
                 {
                     Debug.WriteLine("Unable to find row names property!");
-                    return;
                 }
             }
             else
@@ -102,37 +105,38 @@ namespace LegendaryExplorerCore.Unreal.Classes
                 else
                 {
                     Debug.WriteLine("Unable to find row names property (m_lstRowNumbers)!");
-                    return;
                 }
             }
 
             var binary = export.GetBinaryData<Bio2DABinary>();
 
-            _columnNames = new List<string>(binary.ColumnNames.Select(n => n.Name));
-            mappedColumnNames = new CaseInsensitiveDictionary<int>(ColumnNames.Count);
-            for (int i = 0; i < ColumnCount; i++)
+            for (int i = 0; i < binary.ColumnNames.Count; i++)
             {
-                mappedColumnNames[ColumnNames[i]] = i;
+                _columnNames.Add(binary.ColumnNames[i]);
+                mappedColumnNames[binary.ColumnNames[i]] = i;
             }
 
-            mappedRowNames = new CaseInsensitiveDictionary<int>(RowCount);
             for (int i = 0; i < RowCount; i++)
             {
                 mappedRowNames[RowNames[i]] = i;
             }
 
             Cells = new Bio2DACell[RowCount, ColumnCount];
-            foreach ((int index, Bio2DABinary.Cell cell) in binary.Cells)
+            if (ColumnCount > 0) // Prevents division by zero
             {
-                int row = index / ColumnCount;
-                int col = index % ColumnCount;
-                this[row, col] = cell.Type switch
+                foreach ((int index, Bio2DACell cell) in binary.Cells)
                 {
-                    Bio2DABinary.DataType.INT => new Bio2DACell(cell.IntValue),
-                    Bio2DABinary.DataType.NAME => new Bio2DACell(cell.NameValue, export.FileRef),
-                    Bio2DABinary.DataType.FLOAT => new Bio2DACell(cell.FloatValue),
-                    _ => throw new ArgumentOutOfRangeException()
-                };
+                    int row = index / ColumnCount;
+                    int col = index % ColumnCount;
+                    this[row, col] = cell.Type switch
+                    {
+                        Bio2DACell.Bio2DADataType.TYPE_INT => new Bio2DACell(cell.IntValue) { package = export.FileRef },
+                        Bio2DACell.Bio2DADataType.TYPE_NAME => new Bio2DACell(cell.NameValue, export.FileRef) { package = export.FileRef },
+                        Bio2DACell.Bio2DADataType.TYPE_FLOAT => new Bio2DACell(cell.FloatValue) { package = export.FileRef },
+                        // Null populated later
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+                }
             }
 
             // Populate null cells with TYPE_NULL cells
@@ -142,13 +146,14 @@ namespace LegendaryExplorerCore.Unreal.Classes
                 {
                     if (this[row, col] == null)
                     {
-                        this[row, col] = new Bio2DACell();
+                        this[row, col] = new Bio2DACell() { package = export.FileRef };
                     }
                 }
             }
 
             IsIndexed = binary.IsIndexed;
         }
+
 
         /// <summary>
         /// Initializes a blank Bio2DA. Cells is not initialized, the caller must set up this Bio2DA.
@@ -159,12 +164,13 @@ namespace LegendaryExplorerCore.Unreal.Classes
             _rowNames = new List<string>();
             mappedRowNames = new CaseInsensitiveDictionary<int>();
             mappedColumnNames = new CaseInsensitiveDictionary<int>();
+            RowNamesUI = new List<string>();
         }
 
         /// <summary>
         /// Marks all cells as not modified
         /// </summary>
-        internal void MarkAsUnmodified()
+        public void MarkAsUnmodified()
         {
             for (int rowindex = 0; rowindex < RowCount; rowindex++)
             {
@@ -184,7 +190,7 @@ namespace LegendaryExplorerCore.Unreal.Classes
             var binary = new Bio2DABinary
             {
                 ColumnNames = ColumnNames.Select(s => new NameReference(s)).ToList(),
-                Cells = new OrderedMultiValueDictionary<int, Bio2DABinary.Cell>(),
+                Cells = new OrderedMultiValueDictionary<int, Bio2DACell>(),
                 Export = Export,
                 IsIndexed = IsIndexed
             };
@@ -199,25 +205,35 @@ namespace LegendaryExplorerCore.Unreal.Classes
                         int index = (rowindex * ColumnCount) + colindex;
                         binary.Cells.Add(index, cell.Type switch
                         {
-                            Bio2DACell.Bio2DADataType.TYPE_INT => new Bio2DABinary.Cell { IntValue = cell.IntValue, Type = Bio2DABinary.DataType.INT },
-                            Bio2DACell.Bio2DADataType.TYPE_NAME => new Bio2DABinary.Cell { NameValue = cell.NameValue, Type = Bio2DABinary.DataType.NAME },
-                            Bio2DACell.Bio2DADataType.TYPE_FLOAT => new Bio2DABinary.Cell { FloatValue = cell.FloatValue, Type = Bio2DABinary.DataType.FLOAT },
+                            Bio2DACell.Bio2DADataType.TYPE_INT => new Bio2DACell { IntValue = cell.IntValue, Type = Bio2DACell.Bio2DADataType.TYPE_INT },
+                            Bio2DACell.Bio2DADataType.TYPE_NAME => new Bio2DACell { NameValue = cell.NameValue, Type = Bio2DACell.Bio2DADataType.TYPE_NAME },
+                            Bio2DACell.Bio2DADataType.TYPE_FLOAT => new Bio2DACell { FloatValue = cell.FloatValue, Type = Bio2DACell.Bio2DADataType.TYPE_FLOAT },
+                            // NULL IS NOT ADDED
                             _ => throw new ArgumentOutOfRangeException()
                         });
                     }
                 }
             }
 
-            Property rowsProp = Export.ClassName switch
-            {
-                "Bio2DA" => new ArrayProperty<NameProperty>(RowNames.Select(n => new NameProperty(n)), "m_sRowLabel"),
-                "Bio2DANumberedRows" => new ArrayProperty<IntProperty>(RowNames.Select(n => new IntProperty(int.Parse(n))), "m_lstRowNumbers"),
-                _ => throw new ArgumentOutOfRangeException()
-            };
-
             // This is so newly minted 2DA can be installed into an export.
             export ??= Export;
-            export.WritePropertyAndBinary(rowsProp, binary);
+
+            if (RowNames.Count > 0)
+            {
+                Property rowsProp = Export.ClassName switch
+                {
+                    "Bio2DA" => new ArrayProperty<NameProperty>(RowNames.Select(n => new NameProperty(n)), "m_sRowLabel"),
+                    "Bio2DANumberedRows" => new ArrayProperty<IntProperty>(RowNames.Select(n => new IntProperty(int.Parse(n))), "m_lstRowNumbers"),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+                export.WritePropertyAndBinary(rowsProp, binary);
+            }
+            else
+            {
+                export.RemoveProperty("m_sRowLabel"); // No rows.
+                export.WriteBinary(binary);
+            }
+
         }
 
         internal string GetColumnNameByIndex(int columnIndex)
@@ -253,7 +269,7 @@ namespace LegendaryExplorerCore.Unreal.Classes
         private CaseInsensitiveDictionary<int> mappedRowNames;
 
         /// <summary>
-        /// Adds a new row of the specified name to the table. If using Bio2DANumberedRows, pass a string version of an int. If a row already exists with this name, the index for that row is returned instead.
+        /// Adds a new row of the specified name to the table. If using Bio2DANumberedRows, pass a string version of an int. If a row already exists with this name, the index for that row is returned instead. Upon adding a new row, new TYPE_NULL cells are added
         /// </summary>
         /// <param name="rowName"></param>
         /// <returns></returns>
@@ -263,10 +279,82 @@ namespace LegendaryExplorerCore.Unreal.Classes
             {
                 return existing;
             }
-
+            if (RowCount == Cells.GetLength(0))
+            {
+                Expand2DA(true);
+            }
             mappedRowNames[rowName] = _rowNames.Count; // 0 based
             _rowNames.Add(rowName);
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowNames)));
+
             return _rowNames.Count - 1;
+        }
+
+        /// <summary>
+        /// Adds a new column of the specified name to the table. If a column already exists with this name, the index for that column is returned instead. Upon adding a new column, new TYPE_NULL cells are added.
+        /// </summary>
+        /// <param name="rowName"></param>
+        /// <returns></returns>
+        public int AddColumn(string columnName)
+        {
+            if (mappedColumnNames.TryGetValue(columnName, out var existing))
+            {
+                return existing;
+            }
+            if (ColumnCount == Cells.GetLength(1))
+            {
+                Expand2DA(false);
+            }
+            mappedColumnNames[columnName] = _columnNames.Count; // 0 based
+            _columnNames.Add(columnName);
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ColumnNames)));
+
+            return _columnNames.Count - 1;
+        }
+
+        /// <summary>
+        /// Expands the 2DA by copying the Bio2DA cells into a new table. 
+        /// </summary>
+        /// <param name="expandVertically"></param>
+        private void Expand2DA(bool expandVertically)
+        {
+            // Called before column or row was added.
+
+            int newRowCount = RowCount;
+            int newColCount = ColumnCount;
+            if (expandVertically)
+                newRowCount++;
+            else
+                newColCount++;
+
+            var oldCells = Cells;
+            Cells = new Bio2DACell[newRowCount, newColCount];
+            for (int i = 0; i < RowCount; i++)
+            {
+                for (int j = 0; j < ColumnCount; j++)
+                {
+                    Cells[i, j] = oldCells[i, j];
+                }
+            }
+
+            if (expandVertically)
+            {
+                // New row. Populate all columns in this row
+                for (int i = 0; i < ColumnCount; i++)
+                {
+                    Cells[newRowCount - 1, i] = new Bio2DACell() { package = Export?.FileRef }; // -1 as it's 0 indexed
+                }
+            }
+            else
+            {
+                // New Column. Populate all rows for this column
+                for (int i = 0; i < RowCount; i++)
+                {
+                    Cells[i, newColCount - 1] = new Bio2DACell() { package = Export?.FileRef }; ; // -1 as it's 0 indexed
+                }
+            }
         }
 
         /// <summary>
@@ -389,5 +477,7 @@ namespace LegendaryExplorerCore.Unreal.Classes
         }
 
         #endregion
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

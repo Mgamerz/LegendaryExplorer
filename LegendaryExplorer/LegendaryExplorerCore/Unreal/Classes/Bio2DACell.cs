@@ -7,7 +7,11 @@ namespace LegendaryExplorerCore.Unreal.Classes
     [AddINotifyPropertyChangedInterface]
     public class Bio2DACell
     {
-        private readonly IMEPackage Pcc;
+        /// <summary>
+        /// Package that is used for name lookups so the correct name index can be determined.
+        /// </summary>
+        public IMEPackage package { get; init; }
+
 
         // Fody weaves setters for these below
         [AlsoNotifyFor(nameof(DisplayableValue))]
@@ -18,6 +22,30 @@ namespace LegendaryExplorerCore.Unreal.Classes
 
         [AlsoNotifyFor(nameof(DisplayableValue))]
         public NameReference NameValue { get; set; }
+
+        public int NameIndex
+        {
+            get
+            {
+                if (package == null)
+                    return 0;
+                var result = package.findName(NameValue);
+                if (result < 0)
+                    return 0; // This is to prevent index out of bounds
+                return result;
+            }
+            set
+            {
+                if (package == null)
+                    return; // Do nothing.
+                NameValue = package.GetNameEntry(value);
+            }
+        }
+
+        /// <summary>
+        /// If the cell has been populated once (loaded)
+        /// </summary>
+        private bool Initialized;
 
         #region DO NOT REMOVE THESE - THEY ARE WEAVED BY FODY
         private void OnIntValueChanged()
@@ -55,39 +83,51 @@ namespace LegendaryExplorerCore.Unreal.Classes
             TYPE_NULL = 5
         }
 
-        public Bio2DADataType Type { get; private set; }
+        public Bio2DADataType Type { get; set; }
+
+        private void OnTypeChanged()
+        {
+            if (Initialized)
+                IsModified = true;
+        }
 
         private Bio2DACell(Bio2DADataType type, int offset, IMEPackage pcc = null)
         {
             Offset = offset;
-            Pcc = pcc;
             Type = type;
+            // DO NOT INITIALIZE HERE - as value is set in templated constructors
         }
 
         public Bio2DACell(int intValue, int offset = 0) : this(Bio2DADataType.TYPE_INT, offset)
         {
             IntValue = intValue;
+            Initialized = true;
         }
 
         public Bio2DACell(float floatValue, int offset = 0) : this(Bio2DADataType.TYPE_FLOAT, offset)
         {
             FloatValue = floatValue;
+            Initialized = true;
         }
 
         public Bio2DACell(NameReference nameValue, IMEPackage pcc, int offset = 0) : this(Bio2DADataType.TYPE_NAME, offset, pcc)
         {
             NameValue = nameValue;
+            Initialized = true;
         }
 
         /// <summary>
         /// Generates a new TYPE_NULL Bio2DACell. Cells of this type will not be serialized.
         /// </summary>
-        public Bio2DACell() : this(Bio2DADataType.TYPE_NULL, 0) {}
+        public Bio2DACell() : this(Bio2DADataType.TYPE_NULL, 0)
+        {
+            Initialized = true;
+        }
 
         /// <summary>
-        /// This is a string because that's what the UI passes here
+        /// The numerical portion of the Name reference. This is a string because that's what the UI passes here (as it's done via a text editor field)
         /// </summary>
-        public string NameIndex
+        public string NameNumber
         {
             get => Type != Bio2DADataType.TYPE_NAME ? "-1" : NameValue.Number.ToString();
             set
@@ -96,7 +136,6 @@ namespace LegendaryExplorerCore.Unreal.Classes
                 if (int.TryParse(value, out int parsed) && parsed >= 0)
                 {
                     NameValue = new NameReference(NameValue.Name, parsed);
-                    IsModified = true;
                     //OnPropertyChanged(nameof(DisplayableValue));
                 }
             }
