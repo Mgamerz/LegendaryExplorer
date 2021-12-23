@@ -1,3 +1,8 @@
+This fork has some experimental dumb things done by Mgamerz that don't belong in the main repository.
+
+Super WIP Life is Strange (2015) support is on the LIS branch.
+
+
 [![Download latest release](https://user-images.githubusercontent.com/8151477/124207604-d99edb80-dab3-11eb-9411-f71b499b254a.png)](https://github.com/ME3Tweaks/LegendaryExplorer/releases/latest)
 
 [![Build Status](https://dev.azure.com/ME3Tweaks/ME3Explorer/_apis/build/status/ME3Tweaks.LegendaryExplorer?branchName=Beta)](https://dev.azure.com/ME3Tweaks/LegendaryExplorer/_build/latest?definitionId=6&branchName=Beta)
