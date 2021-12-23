@@ -33,7 +33,7 @@ namespace LegendaryExplorerCore.Tests
                     // Do not use package caching in tests
                     Console.WriteLine($"Opening package {p}");
                     var package = MEPackageHandler.OpenMEPackage(p, forceLoadFromDisk: true);
-                    //if (package.Platform != MEPackage.GamePlatform.PC)
+                    //if (package.Platform != GamePlatform.PC)
                     //    continue;
                     //if (package.Game != MEGame.ME2)
                     //    continue;

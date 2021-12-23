@@ -1160,8 +1160,8 @@ namespace LegendaryExplorer.Tools.PackageEditor.Experiments
             //{
             //    int nativeIndex = 0;
             //    var data = ee.Data;
-            //    var offset = data.Length - (package.Game == MEGame.ME3 || package.Platform == MEPackage.GamePlatform.PS3 ? 4 : 12);
-            //    if (package.Platform == MEPackage.GamePlatform.Xenon && package.Game == MEGame.ME1)
+            //    var offset = data.Length - (package.Game == MEGame.ME3 || package.Platform == GamePlatform.PS3 ? 4 : 12);
+            //    if (package.Platform == GamePlatform.Xenon && package.Game == MEGame.ME1)
             //    {
             //        if (ee.ObjectName.Name == "ClientWeaponSet")
             //            Debugger.Break();
@@ -1177,7 +1177,7 @@ namespace LegendaryExplorer.Tools.PackageEditor.Experiments
             //        if (nativeIndex == 0)
             //        {
             //            var nativeBackOffset = ee.FileRef.Game == MEGame.ME3 ? 6 : 7;
-            //            if (ee.Game < MEGame.ME3 && ee.FileRef.Platform != MEPackage.GamePlatform.PS3) nativeBackOffset = 0xF;
+            //            if (ee.Game < MEGame.ME3 && ee.FileRef.Platform != GamePlatform.PS3) nativeBackOffset = 0xF;
             //            nativeIndex = EndianReader.ToInt16(data, data.Length - nativeBackOffset, ee.FileRef.Endian);
             //        }
             //        if (nativeIndex > 0)

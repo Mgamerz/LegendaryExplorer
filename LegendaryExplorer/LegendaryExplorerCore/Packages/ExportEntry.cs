@@ -291,7 +291,7 @@ namespace LegendaryExplorerCore.Packages
             bin.WriteUInt64((ulong)_objectFlags);
             bin.WriteInt32(DataSize);
             bin.WriteInt32(DataOffset);
-            if (pcc.Game <= MEGame.ME2 && pcc.Platform != MEPackage.GamePlatform.PS3)
+            if (pcc.Game <= MEGame.ME2 && pcc.Platform != GamePlatform.PS3)
             {
                 if (clearComponentMap)
                 {
@@ -312,7 +312,7 @@ namespace LegendaryExplorerCore.Packages
                 bin.WriteInt32(count);
             }
             bin.WriteGuid(PackageGUID);
-            if (pcc.Game != MEGame.ME1 || pcc.Platform != MEPackage.GamePlatform.Xenon)
+            if (pcc.Game != MEGame.ME1 || pcc.Platform != GamePlatform.Xenon)
             {
                 bin.WriteUInt32((uint)PackageFlags);
             }
@@ -342,7 +342,7 @@ namespace LegendaryExplorerCore.Packages
                 _generationNetObjectCounts[i] = stream.ReadInt32();
             }
             _packageGuid = stream.ReadGuid();
-            if (Game != MEGame.ME1 || _fileRef.Platform != MEPackage.GamePlatform.Xenon)
+            if (Game != MEGame.ME1 || _fileRef.Platform != GamePlatform.Xenon)
             {
                 _packageFlags = (EPackageFlags)stream.ReadUInt32();
             }
@@ -493,7 +493,7 @@ namespace LegendaryExplorerCore.Packages
 
         public int DataOffset;
 
-        public bool HasComponentMap => _fileRef.Game <= MEGame.ME2 && _fileRef.Platform != MEPackage.GamePlatform.PS3;
+        public bool HasComponentMap => _fileRef.Game != MEGame.Unknown && _fileRef.Game <= MEGame.ME2 && _fileRef.Platform != GamePlatform.PS3;
 
         //me1 and me2 only
         private byte[] _componentMap;
@@ -858,8 +858,8 @@ namespace LegendaryExplorerCore.Packages
                 MEGame.LE1 => 30,
                 MEGame.LE2 => 30, 
                 MEGame.LE3 => 30, 
-                MEGame.ME1 when _fileRef.Platform == MEPackage.GamePlatform.PS3 => 30,
-                MEGame.ME2 when _fileRef.Platform == MEPackage.GamePlatform.PS3 => 30,
+                MEGame.ME1 when _fileRef.Platform == GamePlatform.PS3 => 30,
+                MEGame.ME2 when _fileRef.Platform == GamePlatform.PS3 => 30,
                 _ => 32
             };
 
@@ -1005,7 +1005,7 @@ namespace LegendaryExplorerCore.Packages
         /// <returns>True if the export has a stack, false otherwise</returns>
         public bool SetPropertyFlags(EPropertyFlags flags)
         {
-            if (FileRef.Platform != MEPackage.GamePlatform.PC) throw new Exception("Cannot call SetPropertyFlags() on non PC platform");
+            if (FileRef.Platform != GamePlatform.PC) throw new Exception("Cannot call SetPropertyFlags() on non PC platform");
             if (HasStack)
             {
                 // This might be able to be optimized. Have to go through .Data as it needs to call the side effects

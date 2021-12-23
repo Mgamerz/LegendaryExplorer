@@ -809,7 +809,7 @@ namespace LegendaryExplorerCore.Unreal
             Token newTok = new Token { op = t };
             int end = start;
             if ((t <= 0x65 && export.Game.IsGame3())
-                || (t < 0x60 && (export.FileRef.Platform == MEPackage.GamePlatform.PS3 || (export.Game is MEGame.ME1 or MEGame.ME2 or MEGame.LE1 or MEGame.LE2)))) //PS3 uses ME3 engine but ME1/ME2 use PC native index which are different
+                || (t < 0x60 && (export.FileRef.Platform == GamePlatform.PS3 || (export.Game is MEGame.ME1 or MEGame.ME2 or MEGame.LE1 or MEGame.LE2)))) //PS3 uses ME3 engine but ME1/ME2 use PC native index which are different
             {
                 switch (t)
                 {
@@ -2493,7 +2493,7 @@ namespace LegendaryExplorerCore.Unreal
                     pos += 1;//skip EndFuncParams
                              //t.text += ")";
                     break;
-                //case (int)ENatives.NATIVE_PS3_ClassIsChildOf when export.FileRef.Platform == MEPackage.GamePlatform.PS3: //0x0258
+                //case (int)ENatives.NATIVE_PS3_ClassIsChildOf when export.FileRef.Platform == GamePlatform.PS3: //0x0258
                 case (int)ENatives.NATIVE_ClassIsChildOf:// 0x0102
                     t.text = "ClassIsChildOf(";
                     count = 0;

@@ -217,9 +217,9 @@ namespace LegendaryExplorer.SharedUI
                                 {
                                     //check if exec
                                     var data = ee.DataReadOnly;
-                                    if (Entry.FileRef.Game == MEGame.ME3 || Entry.FileRef.Platform == MEPackage.GamePlatform.PS3 || Entry.Game.IsLEGame())
+                                    if (Entry.FileRef.Game == MEGame.ME3 || Entry.FileRef.Platform == GamePlatform.PS3 || Entry.Game.IsLEGame())
                                     {
-                                        var flagOffset = Entry.Game.IsGame3() || Entry.FileRef.Platform == MEPackage.GamePlatform.PS3 ? 4 : 12;
+                                        var flagOffset = Entry.Game.IsGame3() || Entry.FileRef.Platform == GamePlatform.PS3 ? 4 : 12;
                                         var flags = EndianReader.ToInt32(data, data.Length - flagOffset, ee.FileRef.Endian);
                                         FlagValues fs = new FlagValues(flags, UE3FunctionReader._flagSet);
                                         _subtext = "";
@@ -261,7 +261,7 @@ namespace LegendaryExplorer.SharedUI
                                         {
                                             var nativeBackOffset = ee.FileRef.Game == MEGame.ME3 ? 6 : 7;
                                             if (ee.Game < MEGame.ME3 &&
-                                                ee.FileRef.Platform != MEPackage.GamePlatform.PS3)
+                                                ee.FileRef.Platform != GamePlatform.PS3)
                                                 nativeBackOffset = 0xF;
                                             var nativeIndex = EndianReader.ToInt16(data, data.Length - nativeBackOffset,
                                                 ee.FileRef.Endian);
@@ -299,7 +299,7 @@ namespace LegendaryExplorer.SharedUI
                             case "ComponentProperty":
                                 {
                                     // Objects of this type
-                                    var typeRef = EndianReader.ToInt32(ee.DataReadOnly, Entry.FileRef.Platform == MEPackage.GamePlatform.PC ? 0x2C : 0x20, ee.FileRef.Endian);
+                                    var typeRef = EndianReader.ToInt32(ee.DataReadOnly, Entry.FileRef.Platform == GamePlatform.PC ? 0x2C : 0x20, ee.FileRef.Endian);
                                     if (ee.FileRef.TryGetEntry(typeRef, out var type))
                                     {
                                         _subtext = type.ObjectName;

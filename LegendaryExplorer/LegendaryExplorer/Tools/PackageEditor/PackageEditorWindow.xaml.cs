@@ -1155,7 +1155,7 @@ namespace LegendaryExplorer.Tools.PackageEditor
                 uint importOffset = ms.ReadUInt32();
                 items.Add($"0x{ms.Position - 4:X2} Import Metadata Table Offset: 0x{importOffset:X8}");
 
-                if (Pcc.Game.IsLEGame() || (Pcc.Game != MEGame.ME1 || Pcc.Platform != MEPackage.GamePlatform.Xenon))
+                if (Pcc.Game.IsLEGame() || (Pcc.Game != MEGame.ME1 || Pcc.Platform != GamePlatform.Xenon))
                 {
                     uint dependencyTableOffset = ms.ReadUInt32();
                     items.Add($"0x{ms.Position - 4:X2} Dependency Table Offset: 0x{dependencyTableOffset:X8} (Not used in Mass Effect games)");
@@ -1255,14 +1255,14 @@ namespace LegendaryExplorer.Tools.PackageEditor
                 var packageSource = ms.ReadUInt32(); //this needs to be read in so it can be properly written back out.
                 items.Add($"0x{ms.Position - 4:X4} Package Source: {packageSource:X8}");
 
-                if ((Pcc.Game == MEGame.ME2 || Pcc.Game == MEGame.ME1) && Pcc.Platform != MEPackage.GamePlatform.PS3)
+                if ((Pcc.Game == MEGame.ME2 || Pcc.Game == MEGame.ME1) && Pcc.Platform != GamePlatform.PS3)
                 {
                     var alwaysZero1 =
                         ms.ReadUInt32(); //this needs to be read in so it can be properly written back out.
                     items.Add($"0x{ms.Position - 4:X4} Always zero: {alwaysZero1}");
                 }
 
-                if (Pcc.Game is MEGame.ME2 or MEGame.ME3 || Pcc.Game.IsLEGame() || Pcc.Platform == MEPackage.GamePlatform.PS3)
+                if (Pcc.Game is MEGame.ME2 or MEGame.ME3 || Pcc.Game.IsLEGame() || Pcc.Platform == GamePlatform.PS3)
                 {
                     int additionalPackagesToCookCount = ms.ReadInt32();
                     items.Add(
@@ -2214,9 +2214,9 @@ namespace LegendaryExplorer.Tools.PackageEditor
             return entry?.ClassName == "Package";
         }
 
-        private bool ImportIsSelected() => TryGetSelectedImport(out _);
+        private bool ImportIsSelected() => Pcc != null && TryGetSelectedImport(out _);
 
-        private bool EntryIsSelected() => TryGetSelectedEntry(out _);
+        private bool EntryIsSelected() => Pcc != null && TryGetSelectedEntry(out _);
 
         private bool PackageIsLoaded() => Pcc != null;
 

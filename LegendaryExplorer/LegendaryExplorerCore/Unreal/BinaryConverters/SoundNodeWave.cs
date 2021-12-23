@@ -12,7 +12,7 @@ namespace LegendaryExplorerCore.Unreal.BinaryConverters
 
         protected override void Serialize(SerializingContainer2 sc)
         {
-            if (sc.Game.IsLEGame() || sc.Pcc.Platform == MEPackage.GamePlatform.PS3)
+            if (sc.Game.IsLEGame() || sc.Pcc.Platform == GamePlatform.PS3)
             {
                 // Unknown items
                 sc.SerializeConstInt(0);

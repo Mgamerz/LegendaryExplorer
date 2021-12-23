@@ -89,9 +89,9 @@ namespace LegendaryExplorerCore.Tests
             return MEGame.Unknown;
         }
 
-        public static (MEGame expectedGame, MEPackage.GamePlatform expectedPlatform) GetExpectedTypes(string p)
+        public static (MEGame expectedGame, GamePlatform expectedPlatform) GetExpectedTypes(string p)
         {
-            MEPackage.GamePlatform expectedPlatform = MEPackage.GamePlatform.Unknown;
+            GamePlatform expectedPlatform = GamePlatform.Unknown;
             MEGame expectedGame = MEGame.Unknown;
 
             string parentname = Directory.GetParent(p).FullName;
@@ -111,7 +111,7 @@ namespace LegendaryExplorerCore.Tests
                 }
                 else if (level == 1)
                 {
-                    expectedPlatform = Enum.Parse<MEPackage.GamePlatform>(dirname);
+                    expectedPlatform = Enum.Parse<GamePlatform>(dirname);
                 }
                 else
                 {

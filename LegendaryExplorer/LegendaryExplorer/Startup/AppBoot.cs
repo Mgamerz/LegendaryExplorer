@@ -84,6 +84,11 @@ namespace LegendaryExplorer.Startup
 
             Settings.LoadSettings();
 
+            // LIS TESTING ONLY!!!!!!!!!!!!!!
+            LISPackageSupport.LISPackageSupport.AddSupport();
+
+            // END LIS TESTING ONLY
+
             ToolSet.Initialize();
             app.ShutdownMode = ShutdownMode.OnExplicitShutdown;
             app.Dispatcher.UnhandledException += app.OnDispatcherUnhandledException; //only start handling them after bootup

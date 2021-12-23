@@ -25,7 +25,7 @@ namespace LegendaryExplorerCore.Tests
                 // Do not use package caching in tests
                 Debug.WriteLine($"Opening mount file {mountFilePath}");
 
-                (MEGame expectedGame, MEPackage.GamePlatform expectedPlatform) = GlobalTest.GetExpectedTypes(mountFilePath);
+                (MEGame expectedGame, GamePlatform expectedPlatform) = GlobalTest.GetExpectedTypes(mountFilePath);
                 var mountFName = Path.GetFileNameWithoutExtension(mountFilePath);
                 var mountProps = mountFName.Split('-');
 

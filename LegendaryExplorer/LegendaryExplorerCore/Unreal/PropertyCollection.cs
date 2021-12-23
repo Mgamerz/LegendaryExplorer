@@ -215,7 +215,7 @@ namespace LegendaryExplorerCore.Unreal
                                 if (size != 1)
                                 {
                                     NameReference enumType;
-                                    if (pcc.Game is MEGame.ME3 or MEGame.LE1 or MEGame.LE2 or MEGame.LE3 or MEGame.UDK || pcc.Platform == MEPackage.GamePlatform.PS3)
+                                    if (pcc.Game is MEGame.ME3 or MEGame.LE1 or MEGame.LE2 or MEGame.LE3 or MEGame.UDK or MEGame.Unknown || pcc.Platform == GamePlatform.PS3)
                                     {
                                         enumType = new NameReference(pcc.GetNameEntry(stream.ReadInt32()), stream.ReadInt32());
                                     }
@@ -248,7 +248,7 @@ namespace LegendaryExplorerCore.Unreal
                                 }
                                 else
                                 {
-                                    if (pcc.Game >= MEGame.ME3 || pcc.Platform == MEPackage.GamePlatform.PS3)
+                                    if (pcc.Game >= MEGame.ME3 || pcc.Platform == GamePlatform.PS3)
                                     {
                                         stream.Seek(8, SeekOrigin.Current);
                                     }
@@ -342,8 +342,8 @@ namespace LegendaryExplorerCore.Unreal
             var props = new PropertyCollection();
             switch (pcc.Game)
             {
-                case MEGame.ME1 when parsingEntry != null && parsingEntry.FileRef.Platform == MEPackage.GamePlatform.PS3 && ME3UnrealObjectInfo.Structs.ContainsKey(structType):
-                case MEGame.ME2 when parsingEntry != null && parsingEntry.FileRef.Platform == MEPackage.GamePlatform.PS3 && ME3UnrealObjectInfo.Structs.ContainsKey(structType):
+                case MEGame.ME1 when parsingEntry != null && parsingEntry.FileRef.Platform == GamePlatform.PS3 && ME3UnrealObjectInfo.Structs.ContainsKey(structType):
+                case MEGame.ME2 when parsingEntry != null && parsingEntry.FileRef.Platform == GamePlatform.PS3 && ME3UnrealObjectInfo.Structs.ContainsKey(structType):
                     structValueLookupGame = MEGame.ME3;
                     break;
                 case MEGame.ME3 when ME3UnrealObjectInfo.Structs.ContainsKey(structType):
@@ -483,7 +483,7 @@ namespace LegendaryExplorerCore.Unreal
                     {
                         //Attempt to get info without lookup first
                         // PS3 is based on ME3 engine. So use ME3
-                        var enumname = GlobalUnrealObjectInfo.GetEnumType(pcc.Platform != MEPackage.GamePlatform.PS3 ? pcc.Game : MEGame.ME3, name, enclosingType);
+                        var enumname = GlobalUnrealObjectInfo.GetEnumType(pcc.Platform != GamePlatform.PS3 ? pcc.Game : MEGame.ME3, name, enclosingType);
                         ClassInfo classInfo = null;
                         if (enumname == null && parsingEntry is ExportEntry parsingExport)
                         {
@@ -513,7 +513,7 @@ namespace LegendaryExplorerCore.Unreal
                         }
 
                         string arrayStructType = propertyInfo?.Reference;
-                        if (IsInImmutable || GlobalUnrealObjectInfo.IsImmutable(arrayStructType, pcc.Platform != MEPackage.GamePlatform.PS3 ? pcc.Game : MEGame.ME3))
+                        if (IsInImmutable || GlobalUnrealObjectInfo.IsImmutable(arrayStructType, pcc.Platform != GamePlatform.PS3 ? pcc.Game : MEGame.ME3))
                         {
                             int arraySize = 0;
                             if (!IsInImmutable)
@@ -1380,7 +1380,7 @@ namespace LegendaryExplorerCore.Unreal
         internal BoolProperty(EndianReader stream, IMEPackage pcc, NameReference? name = null, bool isArrayContained = false) : base(name)
         {
             ValueOffset = (int)stream.Position;
-            if (pcc.Game < MEGame.ME3 && pcc.Platform != MEPackage.GamePlatform.PS3 && isArrayContained)
+            if (pcc.Game < MEGame.ME3 && pcc.Platform != GamePlatform.PS3 && isArrayContained)
             {
                 //ME2 seems to read 1 byte... sometimes...
                 //ME1 as well
@@ -1388,7 +1388,7 @@ namespace LegendaryExplorerCore.Unreal
             }
             else
             {
-                Value = (pcc.Game >= MEGame.ME3 || pcc.Platform == MEPackage.GamePlatform.PS3) ? stream.BaseStream.ReadBoolByte() : stream.ReadBoolInt();
+                Value = (pcc.Game >= MEGame.ME3 || pcc.Platform == GamePlatform.PS3 || pcc.Game == MEGame.Unknown) ? stream.BaseStream.ReadBoolByte() : stream.ReadBoolInt();
             }
         }
 
@@ -1589,7 +1589,7 @@ namespace LegendaryExplorerCore.Unreal
             ValueOffset = (int)stream.Position;
             EnumType = enumType;
 
-            if (pcc.Game == MEGame.ME1 && pcc.Platform == MEPackage.GamePlatform.Xenon)
+            if (pcc.Game == MEGame.ME1 && pcc.Platform == GamePlatform.Xenon)
             {
                 // ME1 Xenon uses 1 byte values
                 var enumIdx = stream.ReadByte();

@@ -65,7 +65,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                 }
 
 
-                //if (export.FileRef.Platform != MEPackage.GamePlatform.Xenon && export.FileRef.Game == MEGame.ME3)
+                //if (export.FileRef.Platform != GamePlatform.Xenon && export.FileRef.Game == MEGame.ME3)
                 //{
                 //    subnodes.Add(MakeInt32Node(bin, "PS3/WiiU Count of something??"));
                 //}
@@ -579,7 +579,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                     bin.JumpTo(shaderMapEndOffset - dataOffset);
                 }
 
-                if (CurrentLoadedExport.Game is MEGame.ME3 or MEGame.UDK && CurrentLoadedExport.FileRef.Platform != MEPackage.GamePlatform.Xenon)
+                if (CurrentLoadedExport.Game is MEGame.ME3 or MEGame.UDK && CurrentLoadedExport.FileRef.Platform != GamePlatform.Xenon)
                 {
                     int numShaderCachePayloads = bin.ReadInt32();
                     var shaderCachePayloads = new BinInterpNode(bin.Position - 4, $"Shader Cache Payloads, {numShaderCachePayloads} items");
@@ -589,7 +589,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                         shaderCachePayloads.Items.Add(MakeEntryNode(bin, $"Payload {i}"));
                     }
                 }
-                else if (CurrentLoadedExport.Game == MEGame.ME1 && CurrentLoadedExport.FileRef.Platform != MEPackage.GamePlatform.PS3)
+                else if (CurrentLoadedExport.Game == MEGame.ME1 && CurrentLoadedExport.FileRef.Platform != GamePlatform.PS3)
                 {
                     int numSomething = bin.ReadInt32();
                     var somethings = new BinInterpNode(bin.Position - 4, $"Something, {numSomething} items");
@@ -2315,7 +2315,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                         new BinInterpNode(bin.Position, $"Node: {nodeString = entryRefString(bin)}", NodeType.StructLeafObject) {Length = 4},
                         ListInitHelper.ConditionalAddOne<ITreeItem>(Pcc.Game != MEGame.UDK, () => MakeEntryNode(bin, "StateNode")),
                         new BinInterpNode(bin.Position, $"ProbeMask: {bin.ReadUInt64():X16}"),
-                        ListInitHelper.ConditionalAdd(Pcc.Game >= MEGame.ME3 || Pcc.Platform == MEPackage.GamePlatform.PS3, () => new ITreeItem[]
+                        ListInitHelper.ConditionalAdd(Pcc.Game >= MEGame.ME3 || Pcc.Platform == GamePlatform.PS3, () => new ITreeItem[]
                         {
                             MakeUInt16Node(bin, "LatentAction")
                         }, () => new ITreeItem[]
@@ -2484,7 +2484,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                 bin.JumpTo(binarystart);
 
                 int count;
-                if (Pcc.Game.IsLEGame() || CurrentLoadedExport.FileRef.Platform == MEPackage.GamePlatform.PS3)
+                if (Pcc.Game.IsLEGame() || CurrentLoadedExport.FileRef.Platform == GamePlatform.PS3)
                 {
                     subnodes.Add(new BinInterpNode(bin.Position, $"Unknown int 1: {bin.ReadInt32()}"));
                     subnodes.Add(new BinInterpNode(bin.Position, $"Unknown int 2: {bin.ReadInt32()}"));
@@ -4346,7 +4346,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
 
                 var bin = new EndianReader(new MemoryStream(data)) { Endian = Pcc.Endian };
                 bin.JumpTo(binarystart);
-                if (Pcc.Game is MEGame.ME2 or MEGame.LE2 && Pcc.Platform != MEPackage.GamePlatform.PS3)
+                if (Pcc.Game is MEGame.ME2 or MEGame.LE2 && Pcc.Platform != GamePlatform.PS3)
                 {
                     bin.Skip(12);
                     subnodes.Add(MakeInt32Node(bin, "AnimBinary Offset"));
@@ -5404,7 +5404,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                     }
                 }
 
-                if (CurrentLoadedExport.FileRef.Platform == MEPackage.GamePlatform.PC)
+                if (CurrentLoadedExport.FileRef.Platform == GamePlatform.PC)
                 {
                     // This seems missing on Xenon 2011. Not sure about others
                     subnodes.Add(MakeNameNode(bin, "Category"));
@@ -5461,7 +5461,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                 {
                     subnodes.Add(MakeUInt32Node(bin, "Unk1"));
                     subnodes.Add(MakeUInt32Node(bin, "Unk2"));
-                    if (Pcc.Game == MEGame.ME2 && Pcc.Platform != MEPackage.GamePlatform.PS3)
+                    if (Pcc.Game == MEGame.ME2 && Pcc.Platform != GamePlatform.PS3)
                     {
                         if (bin.Skip(-8).ReadInt64() == 0)
                         {
@@ -5971,7 +5971,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
             try
             {
                 // Is this right for LE3?
-                if (CurrentLoadedExport.FileRef.Game is MEGame.ME3 or MEGame.LE3 || CurrentLoadedExport.FileRef.Platform == MEPackage.GamePlatform.PS3)
+                if (CurrentLoadedExport.FileRef.Game is MEGame.ME3 or MEGame.LE3 || CurrentLoadedExport.FileRef.Platform == GamePlatform.PS3)
                 {
                     int count = EndianReader.ToInt32(data, binarystart, CurrentLoadedExport.FileRef.Endian);
                     subnodes.Add(new BinInterpNode { Header = $"0x{binarystart:X4} Count: {count.ToString()}", Name = "_" + binarystart });
@@ -6005,7 +6005,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                         */
                     }
                 }
-                else if (CurrentLoadedExport.FileRef.Game == MEGame.ME2 && CurrentLoadedExport.FileRef.Platform != MEPackage.GamePlatform.PS3)
+                else if (CurrentLoadedExport.FileRef.Game == MEGame.ME2 && CurrentLoadedExport.FileRef.Platform != GamePlatform.PS3)
                 {
                     var wwiseID = data.Skip(binarystart).Take(4).ToArray();
                     subnodes.Add(new BinInterpNode
@@ -6334,18 +6334,18 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
             {
                 yield return node;
             }
-            if (Pcc.Game <= MEGame.ME2 && Pcc.Platform != MEPackage.GamePlatform.PS3)
+            if (Pcc.Game <= MEGame.ME2 && Pcc.Platform != GamePlatform.PS3)
             {
                 yield return MakeInt32Node(bin, "Unknown 1");
             }
             yield return MakeEntryNode(bin, "ChildListStart");
-            if (Pcc.Game <= MEGame.ME2 && Pcc.Platform != MEPackage.GamePlatform.PS3)
+            if (Pcc.Game <= MEGame.ME2 && Pcc.Platform != GamePlatform.PS3)
             {
                 yield return MakeInt32Node(bin, "Unknown 2");
                 yield return MakeInt32Node(bin, "Source file line number");
                 yield return MakeInt32Node(bin, "Source file text position");
             }
-            if (Pcc.Game >= MEGame.ME3 || Pcc.Platform == MEPackage.GamePlatform.PS3)
+            if (Pcc.Game >= MEGame.ME3 || Pcc.Platform == GamePlatform.PS3)
             {
                 yield return MakeInt32Node(bin, "ScriptByteCodeSize");
             }
@@ -6464,14 +6464,14 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                     }
                 }
 
-                if (Pcc.Game <= MEGame.ME2 && Pcc.Platform != MEPackage.GamePlatform.PS3)
+                if (Pcc.Game <= MEGame.ME2 && Pcc.Platform != GamePlatform.PS3)
                 {
                     subnodes.Add(MakeByteNode(bin, "Unknown byte"));
                 }
                 subnodes.Add(MakeEntryNode(bin, "Outer Class"));
                 subnodes.Add(MakeNameNode(bin, "Class Config Name"));
 
-                if (Pcc.Game <= MEGame.ME2 && Pcc.Platform != MEPackage.GamePlatform.PS3)
+                if (Pcc.Game <= MEGame.ME2 && Pcc.Platform != GamePlatform.PS3)
                 {
                     subnodes.Add(MakeArrayNode(bin, "Unknown name list 1", i => MakeNameNode(bin, $"{i}")));
                 }
@@ -6481,7 +6481,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                 subnodes.Add(MakeArrayNode(bin, "Interface Table", i =>
                                                new BinInterpNode(bin.Position, $"{Pcc.GetEntryString(bin.ReadInt32())} => {Pcc.GetEntryString(bin.ReadInt32())}")));
 
-                if (Pcc.Game >= MEGame.ME3 || Pcc.Platform == MEPackage.GamePlatform.PS3)
+                if (Pcc.Game >= MEGame.ME3 || Pcc.Platform == GamePlatform.PS3)
                 {
                     subnodes.Add(MakeNameNode(bin, "Unknown Name"));
                     subnodes.Add(MakeUInt32Node(bin, "Unknown"));
@@ -6491,7 +6491,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                     subnodes.Add(MakeArrayNode(bin, "Unknown name list 2", i => MakeNameNode(bin, $"{i}")));
                 }
 
-                if (Pcc.Game is MEGame.LE2 || Pcc.Platform == MEPackage.GamePlatform.PS3 && Pcc.Game == MEGame.ME2)
+                if (Pcc.Game is MEGame.LE2 || Pcc.Platform == GamePlatform.PS3 && Pcc.Game == MEGame.ME2)
                 {
                     subnodes.Add(MakeUInt32Node(bin, "LE2 & PS3 ME2 Unknown"));
                 }
@@ -6621,11 +6621,11 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                 }
                 subnodes.Add(probeMaskNode);
 
-                if (Pcc.Game is MEGame.ME1 or MEGame.ME2 && Pcc.Platform != MEPackage.GamePlatform.PS3 && funcFlags.Has(EFunctionFlags.Net))
+                if (Pcc.Game is MEGame.ME1 or MEGame.ME2 && Pcc.Platform != GamePlatform.PS3 && funcFlags.Has(EFunctionFlags.Net))
                 {
                     subnodes.Add(MakeUInt16Node(bin, "ReplicationOffset"));
                 }
-                if ((Pcc.Game.IsGame1() || Pcc.Game.IsGame2()) && Pcc.Platform != MEPackage.GamePlatform.PS3)
+                if ((Pcc.Game.IsGame1() || Pcc.Game.IsGame2()) && Pcc.Platform != GamePlatform.PS3)
                 {
                     subnodes.Add(MakeNameNode(bin, "FriendlyName"));
                 }

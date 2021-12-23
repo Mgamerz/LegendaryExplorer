@@ -19,7 +19,7 @@ namespace LegendaryExplorerCore.Packages
         public const int UDKUnrealVersion = 868;
         public const int UDKLicenseeVersion = 0;
         public MEGame Game => MEGame.UDK;
-        public MEPackage.GamePlatform Platform => MEPackage.GamePlatform.PC;
+        public GamePlatform Platform => GamePlatform.PC;
         public Endian Endian => Endian.Native; //we do not support big endian UDK packages
         public MELocalization Localization => MELocalization.None;
         public byte[] getHeader()

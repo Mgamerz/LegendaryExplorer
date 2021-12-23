@@ -266,8 +266,7 @@ namespace LegendaryExplorerCore.Unreal.Classes
                     else
                     {
                         //var tfcs = loadedFiles.Where(x => x.EndsWith(@".tfc")).ToList();
-
-                        var fullPath = loadedFiles.FirstOrDefault(x => Path.GetFileName(x).Equals(archive, StringComparison.InvariantCultureIgnoreCase));
+                        var fullPath = loadedFiles?.FirstOrDefault(x => Path.GetFileName(x).Equals(archive, StringComparison.InvariantCultureIgnoreCase));
                         if (fullPath != null)
                         {
                             filename = fullPath;

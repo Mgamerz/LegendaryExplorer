@@ -31,7 +31,7 @@ namespace LegendaryExplorerCore.Tests
                     // Do not use package caching in tests
                     Console.WriteLine($"Opening package {p}");
 
-                    (MEGame expectedGame, MEPackage.GamePlatform expectedPlatform) = GlobalTest.GetExpectedTypes(p);
+                    (MEGame expectedGame, GamePlatform expectedPlatform) = GlobalTest.GetExpectedTypes(p);
 
                     var package = MEPackageHandler.OpenMEPackage(p, forceLoadFromDisk: true);
 
@@ -70,7 +70,7 @@ namespace LegendaryExplorerCore.Tests
                     // Do not use package caching in tests
                     Console.WriteLine($"Opening package {p}");
                     var originalLoadedPackage = MEPackageHandler.OpenMEPackage(p, forceLoadFromDisk: true);
-                    if (originalLoadedPackage.Platform != MEPackage.GamePlatform.PC)
+                    if (originalLoadedPackage.Platform != GamePlatform.PC)
                     {
                         Assert.ThrowsException<Exception>(() => { originalLoadedPackage.SaveToStream(true); },
                             "Non-PC platform package should not be saveable. An exception should have been thrown to stop this!");
@@ -135,7 +135,7 @@ namespace LegendaryExplorerCore.Tests
                     // Do not use package caching in tests
                     Console.WriteLine($"Opening package {p}");
                     var (game, platform) = GlobalTest.GetExpectedTypes(p);
-                    if (platform == MEPackage.GamePlatform.PC) // Will expand in future, but not now.
+                    if (platform == GamePlatform.PC) // Will expand in future, but not now.
                     {
                         var originalLoadedPackage = MEPackageHandler.OpenMEPackage(p, forceLoadFromDisk: true);
                         foreach (var export in originalLoadedPackage.Exports)
@@ -186,7 +186,7 @@ namespace LegendaryExplorerCore.Tests
                     (var game, var platform) = GlobalTest.GetExpectedTypes(p);
 
                     // Use to skip
-                    //if (platform != MEPackage.GamePlatform.Xenon) continue;
+                    //if (platform != GamePlatform.Xenon) continue;
                     //if (game != MEGame.ME1) continue;
 
                     Console.WriteLine($"Opening package {p}");
@@ -198,7 +198,7 @@ namespace LegendaryExplorerCore.Tests
                         //Console.WriteLine($" >> Decompiling {export.InstancedFullPath}");
                         var data = export.Data;
                         var funcBin = ObjectBinary.From<UFunction>(export); //parse it out 
-                        if (export.FileRef.Game == MEGame.ME3 || export.FileRef.Platform == MEPackage.GamePlatform.PS3)
+                        if (export.FileRef.Game == MEGame.ME3 || export.FileRef.Platform == GamePlatform.PS3)
                         {
                             var func = new Function(data, export);
                             func.ParseFunction();
@@ -365,7 +365,7 @@ namespace LegendaryExplorerCore.Tests
                     // Do not use package caching in tests
                     Console.WriteLine($"Opening package {p}");
                     (var game, var platform) = GlobalTest.GetExpectedTypes(p);
-                    if (platform == MEPackage.GamePlatform.PC) // Will expand in future, but not now.
+                    if (platform == GamePlatform.PC) // Will expand in future, but not now.
                     {
                         var loadedPackage = MEPackageHandler.OpenMEPackage(p, forceLoadFromDisk: true);
                         var afterLoadNameCount = loadedPackage.NameCount;

@@ -37,7 +37,7 @@ namespace LegendaryExplorerCore.Unreal.BinaryConverters
             {
                 sc.Serialize(ref Unk1);
                 sc.Serialize(ref Unk2);
-                if (sc.Game == MEGame.ME2 && sc.Pcc.Platform != MEPackage.GamePlatform.PS3)
+                if (sc.Game == MEGame.ME2 && sc.Pcc.Platform != GamePlatform.PS3)
                 {
                     if (Unk1 == 0 && Unk2 == 0)
                     {

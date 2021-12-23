@@ -473,8 +473,8 @@ namespace LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode
 
                 case ME1OpCodes.EX_Switch:
                     {
-                        //if (_package.Game == MEGame.ME1 && _package.Platform != MEPackage.GamePlatform.PS3)
-                        //                        if (_package.Platform == MEPackage.GamePlatform.Xenon || _package.Game != MEGame.ME1)
+                        //if (_package.Game == MEGame.ME1 && _package.Platform != GamePlatform.PS3)
+                        //                        if (_package.Platform == GamePlatform.Xenon || _package.Game != MEGame.ME1)
                         //{
                         //ME1 Xbox this is occurs before the EX_Switch token...
                         _reader.ReadByte(); //Property type or something
@@ -605,7 +605,7 @@ namespace LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode
                         var context = ReadNext();
                         if (IsInvalid(context)) return context;
 
-                        //if (_package.Platform != MEPackage.GamePlatform.PC && _reader.BaseStream.Position % 2 != 0)
+                        //if (_package.Platform != GamePlatform.PC && _reader.BaseStream.Position % 2 != 0)
                         //{
                         //    _reader.ReadByte(); //Byte align
                         //}
@@ -688,7 +688,7 @@ namespace LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode
                     {
                         var field = ReadEntryRef(out var _1);
                         var structType = ReadEntryRef(out var _2);
-                        int wSkip = field.FileRef.Platform == MEPackage.GamePlatform.Xenon && field.FileRef.Game == MEGame.ME1 ? _reader.ReadByte() : _reader.ReadInt16(); //ME1 Xenon seems to only use 1 byte?
+                        int wSkip = field.FileRef.Platform == GamePlatform.Xenon && field.FileRef.Game == MEGame.ME1 ? _reader.ReadByte() : _reader.ReadInt16(); //ME1 Xenon seems to only use 1 byte?
                         var token = ReadNext();
                         if (IsInvalid(token)) return token;
                         return Token($"{token}.{field.ObjectName.Instanced}", readerpos);
@@ -716,7 +716,7 @@ namespace LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode
                 case ME1OpCodes.EX_EndOfScript:
                     return new EndOfScriptToken(readerpos);
 
-                case ME1OpCodes.EX_EmptyParmValue when _package.Platform != MEPackage.GamePlatform.Xenon || _package.Game != MEGame.ME1:
+                case ME1OpCodes.EX_EmptyParmValue when _package.Platform != GamePlatform.Xenon || _package.Game != MEGame.ME1:
                 case ME1OpCodes.EX_GoW_DefaultValue:
                     return new DefaultValueToken("", readerpos);
 
@@ -805,7 +805,7 @@ namespace LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode
                 case ME1OpCodes.EX_DynArrayInsert:
                     return ReadDynArray2ArgMethod("Insert", false);
 
-                case ME1OpCodes.EX_ME1XBox_DynArrayAdd when _package.Platform == MEPackage.GamePlatform.Xenon && _package.Game == MEGame.ME1:
+                case ME1OpCodes.EX_ME1XBox_DynArrayAdd when _package.Platform == GamePlatform.Xenon && _package.Game == MEGame.ME1:
                 // Dybuk discovered that DynArrayAdd is 0x4B in ME1 Xbox. Not sure about ME2 PC uses different opcode
                 case ME1OpCodes.EX_DynArrayAdd:
                     return ReadDynArray1ArgMethod("Add");
@@ -833,7 +833,7 @@ namespace LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode
                     }
 
                 case ME1OpCodes.EX_DelegateProperty:
-                case ME1OpCodes.EX_InstanceDelegate when _package.Platform != MEPackage.GamePlatform.Xenon: // might need scoped to ME1 only
+                case ME1OpCodes.EX_InstanceDelegate when _package.Platform != GamePlatform.Xenon: // might need scoped to ME1 only
                     return Token(ReadName(), readerpos);
 
                 case ME1OpCodes.EX_DelegateFunction:
@@ -857,7 +857,7 @@ namespace LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode
                     return CompareDelegates("!=");
 
                 case ME1OpCodes.EX_StringRefConst:
-                case ME1OpCodes.EX_ME1XBox_StrRefConst when _package.Platform == MEPackage.GamePlatform.Xenon && _package.Game == MEGame.ME1:
+                case ME1OpCodes.EX_ME1XBox_StrRefConst when _package.Platform == GamePlatform.Xenon && _package.Game == MEGame.ME1:
                     return ReadStringRefConst(readerpos);
 
                 default:
@@ -907,7 +907,7 @@ namespace LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode
 
             var arrayExpression = ReadNext();
             if (IsInvalid(arrayExpression)) return arrayExpression;
-            if (_package.Platform == MEPackage.GamePlatform.Xenon && _package.Game == MEGame.ME1)
+            if (_package.Platform == GamePlatform.Xenon && _package.Game == MEGame.ME1)
             {
                 _reader.ReadByte(); //This is a workaround for EX_Switch, maybe?
             }
@@ -915,7 +915,7 @@ namespace LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode
             var numBytesToSkipIfExpressionNull = _reader.ReadUInt16();
 
             ////array.
-            //if (_package.Platform == MEPackage.GamePlatform.PC && _package.Game == MEGame.ME2)
+            //if (_package.Platform == GamePlatform.PC && _package.Game == MEGame.ME2)
             //{
             //    //if (array.OpCode == ME1OpCodes.EX_LocalVariable ||
             //    //    array.OpCode == ME1OpCodes.EX_Context)
@@ -959,17 +959,17 @@ namespace LegendaryExplorerCore.ME1.Unreal.UnhoodBytecode
 
             var arrayExpression = ReadNext();
             if (IsInvalid(arrayExpression)) return arrayExpression;
-            //if (_package.Platform == MEPackage.GamePlatform.Xenon && _package.Game == MEGame.ME1)
+            //if (_package.Platform == GamePlatform.Xenon && _package.Game == MEGame.ME1)
             //{
             //    _reader.ReadByte(); //This is a workaround for EX_Switch, maybe?
             //}
 
-            if (methodName != "Add" && _package.Game == MEGame.ME2 && _package.Platform != MEPackage.GamePlatform.PS3)
+            if (methodName != "Add" && _package.Game == MEGame.ME2 && _package.Platform != GamePlatform.PS3)
             {
                 var numBytesToSkipIfExpressionNull = _reader.ReadUInt16();
             }
             //array.
-            //if (_package.Platform == MEPackage.GamePlatform.PC && _package.Game == MEGame.ME2)
+            //if (_package.Platform == GamePlatform.PC && _package.Game == MEGame.ME2)
             //{
             //    //if (array.OpCode == ME1OpCodes.EX_LocalVariable ||
             //    //    array.OpCode == ME1OpCodes.EX_Context)

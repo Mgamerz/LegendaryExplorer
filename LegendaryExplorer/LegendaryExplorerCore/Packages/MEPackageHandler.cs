@@ -18,6 +18,30 @@ namespace LegendaryExplorerCore.Packages
         /// </summary>
         public static bool GlobalSharedCacheEnabled = true;
 
+        /// <summary>
+        /// List of identifiers that can be used to identify the format of a package file. Adding to this list before opening a package can allow opening packages from non-ME games.
+        /// </summary>
+        public static List<GameIdentifier> GameIdentifiers = new List<GameIdentifier>(new[]
+        {
+            // Mass Effect - Original Trilogy
+            new GameIdentifier(){GameID = MEGame.ME1, Platform = GamePlatform.PC, Source = "ME1 - PC", UnrealVersion = 491, LicenseeVersion = 1008},
+            new GameIdentifier(){GameID = MEGame.ME1, Platform = GamePlatform.Xenon, Source = "ME1 - Xbox 360", UnrealVersion = 391, LicenseeVersion = 92},
+            new GameIdentifier(){GameID = MEGame.ME1, Platform = GamePlatform.PS3, Source = "ME1 - PS3", UnrealVersion = 684, LicenseeVersion = 153},
+            new GameIdentifier(){GameID = MEGame.ME2, Platform = GamePlatform.PC, Source = "ME2 - PC", UnrealVersion = 512, LicenseeVersion = 130},
+            new GameIdentifier(){GameID = MEGame.ME2, Platform = GamePlatform.PC, Source = "ME2 - PC Demo", UnrealVersion = 513, LicenseeVersion = 130},
+            new GameIdentifier(){GameID = MEGame.ME2, Platform = GamePlatform.Xenon, Source = "ME2 - Xenon", UnrealVersion = 491, LicenseeVersion = 130},
+            new GameIdentifier(){GameID = MEGame.ME2, Platform = GamePlatform.PS3, Source = "ME2 - PS3", UnrealVersion = 684, LicenseeVersion = 150},
+
+            new GameIdentifier(){GameID = MEGame.ME3, Platform = GamePlatform.Xenon, Source = "ME3 - Xenon 2011 Demo Leak", UnrealVersion = 684, LicenseeVersion = 185},
+            new GameIdentifier(){GameID = MEGame.ME3, Platform = GamePlatform.Unknown, Source = "ME3", UnrealVersion = 684, LicenseeVersion = 194}, // Unknown = We have to resolve it later
+            new GameIdentifier(){GameID = MEGame.ME3, Platform = GamePlatform.WiiU, Source = "ME3 - WiiU", UnrealVersion = 845, LicenseeVersion = 194},
+
+            // Mass Effect Legendary Edition
+            new GameIdentifier(){GameID = MEGame.LE1, Platform = GamePlatform.Xenon, Source = "LE1 - PC", UnrealVersion = 684, LicenseeVersion = 171},
+            new GameIdentifier(){GameID = MEGame.LE2, Platform = GamePlatform.Unknown, Source = "LE2 - PC", UnrealVersion = 684, LicenseeVersion = 168},
+            new GameIdentifier(){GameID = MEGame.LE3, Platform = GamePlatform.WiiU, Source = "LE3 - PC", UnrealVersion = 685, LicenseeVersion = 205},
+        });
+
         static readonly ConcurrentDictionary<string, IMEPackage> openPackages = new(StringComparer.OrdinalIgnoreCase);
         public static readonly ObservableCollection<IMEPackage> packagesInTools = new();
 
@@ -304,7 +328,9 @@ namespace LegendaryExplorerCore.Packages
 
 
             IMEPackage pkg;
-            if (fullyCompressed ||
+            var gameIdentifier = GameIdentifiers.FirstOrDefault(x => x.UnrealVersion == version && licenseVersion == x.LicenseeVersion && x.Endian == er.Endian);
+            if (fullyCompressed || gameIdentifier != null)
+                /*
                 version == MEPackage.ME3UnrealVersion && licenseVersion is MEPackage.ME3LicenseeVersion or MEPackage.ME3Xenon2011DemoLicenseeVersion ||
                 version == MEPackage.ME3WiiUUnrealVersion && licenseVersion == MEPackage.ME3LicenseeVersion ||
                 version == MEPackage.ME2UnrealVersion && licenseVersion == MEPackage.ME2LicenseeVersion || //PC and Xbox share this
@@ -321,10 +347,10 @@ namespace LegendaryExplorerCore.Packages
 
 
 
-                )
+                )*/
             {
                 stream.Position -= 8; //reset to start
-                pkg = MEStreamConstructorDelegate(stream, filePath, quickLoad, dataLoadPredicate);
+                pkg = fullyCompressed ? MEStreamConstructorDelegate(stream, filePath, quickLoad, dataLoadPredicate) : gameIdentifier.OpenPackageFromStream(stream, filePath, quickLoad);
                 MemoryAnalyzer.AddTrackedMemoryItem($"MEPackage {Path.GetFileName(filePath)}", new WeakReference(pkg));
             }
             else if (version == UDKPackage.UDKUnrealVersion || version == 867 && licenseVersion == 0)
@@ -558,6 +584,18 @@ namespace LegendaryExplorerCore.Packages
 
         //useful for scanning operations, where a common set of packages are going to be referenced repeatedly
         public static DisposableCollection<IMEPackage> OpenMEPackages(IEnumerable<string> filePaths) => new(filePaths.Select(filePath => OpenMEPackage(filePath)));
+
+        /// <summary>
+        /// Gets information about how to open a package with the given information.
+        /// </summary>
+        /// <param name="unrealVersion"></param>
+        /// <param name="licenseeVersion"></param>
+        /// <param name="endian"></param>
+        /// <returns></returns>
+        public static GameIdentifier GetPackageIdentifier(ushort unrealVersion, ushort licenseeVersion, Endian endian)
+        {
+            return GameIdentifiers.FirstOrDefault(x => x.UnrealVersion == unrealVersion && x.LicenseeVersion == licenseeVersion && x.Endian == endian);
+        }
     }
 
     public class DisposableCollection<T> : List<T>, IDisposable where T : IDisposable

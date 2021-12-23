@@ -2179,7 +2179,7 @@ namespace LegendaryExplorer.Tools.PackageEditor.Experiments
 
         public static void RecompileAll(PackageEditorWindow pew)
         {
-            if (pew.Pcc is { Platform: MEPackage.GamePlatform.PC } && pew.Pcc.Game != MEGame.UDK)
+            if (pew.Pcc is { Platform: GamePlatform.PC } && pew.Pcc.Game != MEGame.UDK)
             {
                 var exportsWithDecompilationErrors = new List<EntryStringPair>();
                 var fileLib = new FileLib(pew.Pcc);

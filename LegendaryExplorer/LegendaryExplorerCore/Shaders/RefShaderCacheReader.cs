@@ -278,9 +278,9 @@ namespace LegendaryExplorerCore.Shaders
             {
                 var name = fs.ReadUnrealString();
                 names.Add(name);
-                if (shaderCachePackage.Game == MEGame.ME1 && shaderCachePackage.Platform != MEPackage.GamePlatform.PS3)
+                if (shaderCachePackage.Game == MEGame.ME1 && shaderCachePackage.Platform != GamePlatform.PS3)
                     fs.Skip(8);
-                else if (shaderCachePackage.Game == MEGame.ME2 && shaderCachePackage.Platform != MEPackage.GamePlatform.PS3)
+                else if (shaderCachePackage.Game == MEGame.ME2 && shaderCachePackage.Platform != GamePlatform.PS3)
                     fs.Skip(4);
             }
 

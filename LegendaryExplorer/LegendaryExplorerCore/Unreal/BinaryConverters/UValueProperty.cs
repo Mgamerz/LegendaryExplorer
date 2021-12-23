@@ -21,7 +21,7 @@ namespace LegendaryExplorerCore.Unreal.BinaryConverters
             base.Serialize(sc);
             sc.Serialize(ref ArraySize);
             sc.Serialize(ref PropertyFlags);
-            if (sc.Pcc.Platform == MEPackage.GamePlatform.PC)
+            if (sc.Pcc.Platform == GamePlatform.PC)
             {
                 sc.Serialize(ref Category);
                 sc.Serialize(ref ArraySizeEnum);

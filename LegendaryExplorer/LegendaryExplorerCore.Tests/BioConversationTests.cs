@@ -28,7 +28,7 @@ namespace LegendaryExplorerCore.Tests
                     // Do not use package caching in tests
                     Console.WriteLine($"Opening package {p}");
                     (var game, var platform) = GlobalTest.GetExpectedTypes(p);
-                    if (platform == MEPackage.GamePlatform.PC)
+                    if (platform == GamePlatform.PC)
                     {
                         var loadedPackage = MEPackageHandler.OpenMEPackage(p, forceLoadFromDisk: true);
                         foreach (var bioConv in loadedPackage.Exports.Where(x => !x.IsDefaultObject && x.ClassName == "BioConversation"))

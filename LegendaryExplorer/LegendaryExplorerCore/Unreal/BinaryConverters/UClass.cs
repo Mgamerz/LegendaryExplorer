@@ -28,20 +28,20 @@ namespace LegendaryExplorerCore.Unreal.BinaryConverters
         {
             base.Serialize(sc);
             sc.Serialize(ref ClassFlags);
-            if (sc.Game < MEGame.ME3 && sc.Pcc.Platform != MEPackage.GamePlatform.PS3)
+            if (sc.Game < MEGame.ME3 && sc.Pcc.Platform != GamePlatform.PS3)
             {
                 byte dummy = 0;
                 sc.Serialize(ref dummy);
             }
             sc.Serialize(ref OuterClass);
             sc.Serialize(ref ClassConfigName);
-            if (sc.Game < MEGame.ME3 && sc.Pcc.Platform != MEPackage.GamePlatform.PS3)
+            if (sc.Game < MEGame.ME3 && sc.Pcc.Platform != GamePlatform.PS3)
             {
                 sc.Serialize(ref unkNameList1, SCExt.Serialize);
             }
             sc.Serialize(ref ComponentNameToDefaultObjectMap, SCExt.Serialize, SCExt.Serialize);
             sc.Serialize(ref Interfaces, SCExt.Serialize, SCExt.Serialize);
-            if (sc.Game >= MEGame.ME3 || sc.Pcc.Platform == MEPackage.GamePlatform.PS3)
+            if (sc.Game >= MEGame.ME3 || sc.Pcc.Platform == GamePlatform.PS3)
             {
                 sc.Serialize(ref DLLBindName);
                 sc.Serialize(ref unk2);
@@ -62,7 +62,7 @@ namespace LegendaryExplorerCore.Unreal.BinaryConverters
                 }
             }
 
-            if (sc.Game is MEGame.LE2 || sc.Game == MEGame.ME2 && sc.Pcc.Platform == MEPackage.GamePlatform.PS3) //ME2 PS3 has extra integer here for some reason
+            if (sc.Game is MEGame.LE2 || sc.Game == MEGame.ME2 && sc.Pcc.Platform == GamePlatform.PS3) //ME2 PS3 has extra integer here for some reason
             {
                 sc.Serialize(ref le2ps3me2Unknown);
             }

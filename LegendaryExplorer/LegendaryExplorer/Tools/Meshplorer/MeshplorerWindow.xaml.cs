@@ -324,15 +324,18 @@ namespace LegendaryExplorer.Tools.Meshplorer
                                 //Transfer the top LOD in. This is due to some weird shit going on in UDK that makes it blow up.
 
                                 //Build map of new bone names to old bone names so we can translate them
+
+                                // List: Position: Old Index, Value at that position: New Index to use
                                 var newToOldBoneListIndexMapping = new List<int>(); //Maps old index to new index. This is WV code... but seems to work in a roundabout way
-                                var incomingToExistingBoneMapping = new Dictionary<string, string>();
                                 for (int i = 0; i < originalMesh.RefSkeleton.Length; i++)
                                 {
                                     var incomingName = newMesh.RefSkeleton[i].Name.Name;
-                                    //var existingName = originalMesh.RefSkeleton[i].Name.Name;
-                                    //incomingToExistingBoneMapping[incomingName] = existingName;
                                     var mappedIndex = originalMesh.RefSkeleton.FindIndex(x => x.Name.Name == incomingName);
-                                    if (mappedIndex < 0) Debug.WriteLine("Could not map bone! Name: " + incomingName);
+                                    if (mappedIndex < 0)
+                                    {
+                                        Debug.WriteLine("Could not map bone! Name: " + incomingName);
+                                        MessageBox.Show($"BIG PROBLEM: Could not map bone name importing LOD: {incomingName}. Stuff is going to break for sure! You should probably contact a dev, and make sure your bone names are identical");
+                                    }
                                     newToOldBoneListIndexMapping.Add(mappedIndex);
                                 }
 

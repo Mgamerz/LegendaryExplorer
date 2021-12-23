@@ -70,6 +70,7 @@ namespace LegendaryExplorerCore.GameFilesystem
                 MEGame.LE1 => LE1Directory.DefaultGamePath,
                 MEGame.LE2 => LE2Directory.DefaultGamePath,
                 MEGame.LE3 => LE3Directory.DefaultGamePath,
+                MEGame.Unknown => null,
                 _ => throw new ArgumentOutOfRangeException(nameof(game), game, null),
             };
         }

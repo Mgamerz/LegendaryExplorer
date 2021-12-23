@@ -25,11 +25,11 @@ namespace LegendaryExplorerCore.Unreal.BinaryConverters
                 sc.Serialize(ref OperatorPrecedence);
             }
             sc.Serialize(ref FunctionFlags);
-            if (sc.Game is MEGame.ME1 or MEGame.ME2 && sc.Pcc.Platform != MEPackage.GamePlatform.PS3 && FunctionFlags.Has(EFunctionFlags.Net))
+            if (sc.Game is MEGame.ME1 or MEGame.ME2 && sc.Pcc.Platform != GamePlatform.PS3 && FunctionFlags.Has(EFunctionFlags.Net))
             {
                 sc.Serialize(ref ReplicationOffset);
             }
-            if ((sc.Game.IsGame1() || sc.Game.IsGame2()) && sc.Pcc.Platform != MEPackage.GamePlatform.PS3)
+            if ((sc.Game.IsGame1() || sc.Game.IsGame2()) && sc.Pcc.Platform != GamePlatform.PS3)
             {
                 sc.Serialize(ref FriendlyName);
             }

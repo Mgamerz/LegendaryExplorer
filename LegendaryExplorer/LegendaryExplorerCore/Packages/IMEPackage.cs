@@ -125,7 +125,7 @@ namespace LegendaryExplorerCore.Packages
         IReadOnlyList<ImportEntry> Imports { get; }
         IReadOnlyList<string> Names { get; }
         MEGame Game { get; }
-        MEPackage.GamePlatform Platform { get; }
+        GamePlatform Platform { get; }
         Endian Endian { get; }
         MELocalization Localization { get; }
         string FilePath { get; }
@@ -229,7 +229,7 @@ namespace LegendaryExplorerCore.Packages
         event UnrealPackageFile.MEPackageEventHandler noLongerUsed;
         MemoryStream SaveToStream(bool compress, bool includeAdditionalPackagesToCook = true, bool includeDependencyTable = true);
         List<ME1TalkFile> LocalTalkFiles { get; }
-        public bool IsModified { get; internal set; }
+        public bool IsModified { get; set; }
 
         /// <summary>
         /// Compares this package against the one located on disk at the specified path

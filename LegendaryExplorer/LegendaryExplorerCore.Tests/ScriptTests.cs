@@ -48,7 +48,7 @@ namespace LegendaryExplorerCore.Tests
             MEPackageHandler.GlobalSharedCacheEnabled = !usePackageCache;
 
             using var testPackage = MEPackageHandler.OpenMEPackage(testFile);
-            if (testPackage.Platform != MEPackage.GamePlatform.PC)
+            if (testPackage.Platform != GamePlatform.PC)
                 return; // Skip this file.
 
             Stopwatch sw = Stopwatch.StartNew();

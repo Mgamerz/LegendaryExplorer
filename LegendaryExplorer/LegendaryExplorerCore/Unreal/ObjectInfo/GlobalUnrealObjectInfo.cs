@@ -63,6 +63,7 @@ namespace LegendaryExplorerCore.Unreal.ObjectInfo
                 MEGame.LE1 => LE1UnrealObjectInfo.Classes,
                 MEGame.LE2 => LE2UnrealObjectInfo.Classes,
                 MEGame.LE3 => LE3UnrealObjectInfo.Classes,
+                MEGame.Unknown => LE3UnrealObjectInfo.Classes,
                 _ => throw new ArgumentOutOfRangeException(nameof(game), game, null)
             };
             while (true)
@@ -255,9 +256,9 @@ namespace LegendaryExplorerCore.Unreal.ObjectInfo
         {
             switch (game)
             {
-                case MEGame.ME1 when parsingEntry == null || parsingEntry.FileRef.Platform != MEPackage.GamePlatform.PS3:
+                case MEGame.ME1 when parsingEntry == null || parsingEntry.FileRef.Platform != GamePlatform.PS3:
                     return ME1UnrealObjectInfo.getArrayType(className, propName, export: parsingEntry as ExportEntry);
-                case MEGame.ME2 when parsingEntry == null || parsingEntry.FileRef.Platform != MEPackage.GamePlatform.PS3:
+                case MEGame.ME2 when parsingEntry == null || parsingEntry.FileRef.Platform != GamePlatform.PS3:
                     var res2 = ME2UnrealObjectInfo.getArrayType(className, propName, export: parsingEntry as ExportEntry);
 #if DEBUG
                     //For debugging only!
@@ -268,8 +269,8 @@ namespace LegendaryExplorerCore.Unreal.ObjectInfo
                     }
 #endif
                     return res2;
-                case MEGame.ME1 when parsingEntry.FileRef.Platform == MEPackage.GamePlatform.PS3:
-                case MEGame.ME2 when parsingEntry.FileRef.Platform == MEPackage.GamePlatform.PS3:
+                case MEGame.ME1 when parsingEntry.FileRef.Platform == GamePlatform.PS3:
+                case MEGame.ME2 when parsingEntry.FileRef.Platform == GamePlatform.PS3:
                 case MEGame.ME3:
                 case MEGame.UDK:
                     var res = ME3UnrealObjectInfo.getArrayType(className, propName, export: parsingEntry as ExportEntry);
@@ -300,6 +301,7 @@ namespace LegendaryExplorerCore.Unreal.ObjectInfo
                 case MEGame.LE2:
                     return LE2UnrealObjectInfo.getArrayType(className, propName, export: parsingEntry as ExportEntry);
                 case MEGame.LE3:
+                case MEGame.Unknown:
                     return LE3UnrealObjectInfo.getArrayType(className, propName, export: parsingEntry as ExportEntry);
             }
             return ArrayType.Int;
@@ -319,14 +321,14 @@ namespace LegendaryExplorerCore.Unreal.ObjectInfo
             PropertyInfo p = null;
             switch (game)
             {
-                case MEGame.ME1 when containingExport == null || containingExport.FileRef.Platform != MEPackage.GamePlatform.PS3:
+                case MEGame.ME1 when containingExport == null || containingExport.FileRef.Platform != GamePlatform.PS3:
                     p = ME1UnrealObjectInfo.getPropertyInfo(containingClassOrStructName, propname, inStruct, nonVanillaClassInfo, containingExport: containingExport);
                     break;
-                case MEGame.ME2 when containingExport == null || containingExport.FileRef.Platform != MEPackage.GamePlatform.PS3:
+                case MEGame.ME2 when containingExport == null || containingExport.FileRef.Platform != GamePlatform.PS3:
                     p = ME2UnrealObjectInfo.getPropertyInfo(containingClassOrStructName, propname, inStruct, nonVanillaClassInfo, containingExport: containingExport);
                     break;
-                case MEGame.ME1 when containingExport.FileRef.Platform == MEPackage.GamePlatform.PS3:
-                case MEGame.ME2 when containingExport.FileRef.Platform == MEPackage.GamePlatform.PS3:
+                case MEGame.ME1 when containingExport.FileRef.Platform == GamePlatform.PS3:
+                case MEGame.ME2 when containingExport.FileRef.Platform == GamePlatform.PS3:
                 case MEGame.ME3:
                 case MEGame.UDK:
                     p = ME3UnrealObjectInfo.getPropertyInfo(containingClassOrStructName, propname, inStruct, nonVanillaClassInfo, containingExport: containingExport);
@@ -350,14 +352,14 @@ namespace LegendaryExplorerCore.Unreal.ObjectInfo
                 inStruct = true;
                 switch (game)
                 {
-                    case MEGame.ME1 when containingExport == null || containingExport.FileRef.Platform != MEPackage.GamePlatform.PS3:
+                    case MEGame.ME1 when containingExport == null || containingExport.FileRef.Platform != GamePlatform.PS3:
                         p = ME1UnrealObjectInfo.getPropertyInfo(containingClassOrStructName, propname, inStruct);
                         break;
-                    case MEGame.ME2 when containingExport == null || containingExport.FileRef.Platform != MEPackage.GamePlatform.PS3:
+                    case MEGame.ME2 when containingExport == null || containingExport.FileRef.Platform != GamePlatform.PS3:
                         p = ME2UnrealObjectInfo.getPropertyInfo(containingClassOrStructName, propname, inStruct);
                         break;
-                    case MEGame.ME1 when containingExport.FileRef.Platform == MEPackage.GamePlatform.PS3:
-                    case MEGame.ME2 when containingExport.FileRef.Platform == MEPackage.GamePlatform.PS3:
+                    case MEGame.ME1 when containingExport.FileRef.Platform == GamePlatform.PS3:
+                    case MEGame.ME2 when containingExport.FileRef.Platform == GamePlatform.PS3:
                     case MEGame.ME3:
                         p = ME3UnrealObjectInfo.getPropertyInfo(containingClassOrStructName, propname, inStruct);
                         break;
@@ -604,6 +606,8 @@ namespace LegendaryExplorerCore.Unreal.ObjectInfo
                     return LE2UnrealObjectInfo.Classes;
                 case MEGame.LE3:
                     return LE3UnrealObjectInfo.Classes;
+                case MEGame.Unknown:
+                    return LE3UnrealObjectInfo.Classes;
                 default:
                     return null;
             }
@@ -626,7 +630,8 @@ namespace LegendaryExplorerCore.Unreal.ObjectInfo
                     return LE2UnrealObjectInfo.Structs;
                 case MEGame.LE3:
                     return LE3UnrealObjectInfo.Structs;
-
+                case MEGame.Unknown:
+                    return LE3UnrealObjectInfo.Structs;
                 default:
                     return null;
             }
@@ -663,10 +668,10 @@ namespace LegendaryExplorerCore.Unreal.ObjectInfo
 
             return export.FileRef.Game switch
             {
-                MEGame.ME1 when export.FileRef.Platform != MEPackage.GamePlatform.PS3 => ME1UnrealObjectInfo.generateClassInfo(export, isStruct),
-                MEGame.ME2 when export.FileRef.Platform != MEPackage.GamePlatform.PS3 => ME2UnrealObjectInfo.generateClassInfo(export, isStruct),
-                MEGame.ME1 when export.FileRef.Platform == MEPackage.GamePlatform.PS3 => ME3UnrealObjectInfo.generateClassInfo(export, isStruct),
-                MEGame.ME2 when export.FileRef.Platform == MEPackage.GamePlatform.PS3 => ME3UnrealObjectInfo.generateClassInfo(export, isStruct),
+                MEGame.ME1 when export.FileRef.Platform != GamePlatform.PS3 => ME1UnrealObjectInfo.generateClassInfo(export, isStruct),
+                MEGame.ME2 when export.FileRef.Platform != GamePlatform.PS3 => ME2UnrealObjectInfo.generateClassInfo(export, isStruct),
+                MEGame.ME1 when export.FileRef.Platform == GamePlatform.PS3 => ME3UnrealObjectInfo.generateClassInfo(export, isStruct),
+                MEGame.ME2 when export.FileRef.Platform == GamePlatform.PS3 => ME3UnrealObjectInfo.generateClassInfo(export, isStruct),
                 MEGame.ME3 => ME3UnrealObjectInfo.generateClassInfo(export, isStruct),
                 MEGame.UDK => ME3UnrealObjectInfo.generateClassInfo(export, isStruct),
                 MEGame.LE1 => LE1UnrealObjectInfo.generateClassInfo(export, isStruct),

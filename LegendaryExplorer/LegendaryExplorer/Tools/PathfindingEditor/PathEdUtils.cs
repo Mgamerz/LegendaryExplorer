@@ -319,7 +319,7 @@ namespace LegendaryExplorer.Tools.PathfindingEditor
         /// </summary>
         /// <param name="export">export used to determine which game is being parsed</param>
         /// <returns>Actor for ME2/ME3, Nav for ME1</returns>
-        public static string GetReachSpecEndName(ExportEntry export) => export.FileRef.Game < MEGame.ME3 && export.FileRef.Platform != MEPackage.GamePlatform.PS3 ? "Nav" : "Actor";
+        public static string GetReachSpecEndName(ExportEntry export) => export.FileRef.Game < MEGame.ME3 && export.FileRef.Platform != GamePlatform.PS3 ? "Nav" : "Actor";
 
         /// <summary>
         /// Rounds a double to an int. Because apparently Microsoft doesn't know how to round numbers.

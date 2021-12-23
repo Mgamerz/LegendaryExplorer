@@ -248,7 +248,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                 int packageGuidOffset = exportFlagsOffset + 8 + EndianReader.ToInt32(header.AsSpan(exportFlagsOffset + 4), exportEntry.FileRef.Endian) * 4;
                 InfoTab_GUID_TextBlock.Text = $"0x{packageGuidOffset:X2} GUID:";
                 InfoTab_ExportGUID_TextBox.Text = exportEntry.PackageGUID.ToString();
-                if (exportEntry.FileRef.Platform is MEPackage.GamePlatform.Xenon && exportEntry.FileRef.Game is MEGame.ME1)
+                if (exportEntry.FileRef.Platform is GamePlatform.Xenon && exportEntry.FileRef.Game is MEGame.ME1)
                 {
                     InfoTab_PackageFlags_TextBlock.Text = "";
                     InfoTab_PackageFlags_TextBox.Text = "";

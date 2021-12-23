@@ -152,7 +152,7 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
             ScriptHeaderBlocks.ClearEx();
             ScriptFooterBlocks.ClearEx();
             DecompiledScriptBoxTitle = "Decompiled Script";
-            if (Pcc.Game is MEGame.ME3 or MEGame.LE1 or  MEGame.LE2 or MEGame.LE3 || Pcc.Platform == MEPackage.GamePlatform.PS3)
+            if (Pcc.Game is MEGame.ME3 or MEGame.LE1 or  MEGame.LE2 or MEGame.LE3 || Pcc.Platform == GamePlatform.PS3)
             {
                 var func = new Function(data, CurrentLoadedExport);
                 func.ParseFunction();
@@ -423,12 +423,12 @@ namespace LegendaryExplorer.UserControls.ExportLoaderControls
                             {
                                 s += $", Name: {CurrentLoadedExport.FileRef.GetNameEntry(val)}";
                             }
-                            if (Pcc.Platform != MEPackage.GamePlatform.PS3 && Pcc.Game <= MEGame.ME2)
+                            if (Pcc.Platform != GamePlatform.PS3 && Pcc.Game <= MEGame.ME2)
                             {
                                 BytecodeReader.ME1OpCodes m = (BytecodeReader.ME1OpCodes)currentData[start];
                                 s += $", OpCode: {m}";
                             }
-                            else if (Pcc.Platform == MEPackage.GamePlatform.PS3 || Pcc.Game == MEGame.ME2)
+                            else if (Pcc.Platform == GamePlatform.PS3 || Pcc.Game == MEGame.ME2)
                             {
                                 Bytecode.byteOpnameMap.TryGetValue(currentData[start], out var opcodeName);
                                 s += $", OpCode: {opcodeName ?? currentData[start].ToString()}";

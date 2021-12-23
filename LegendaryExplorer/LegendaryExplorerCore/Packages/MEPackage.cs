@@ -68,6 +68,7 @@ namespace LegendaryExplorerCore.Packages
     {
         public const ushort ME1UnrealVersion = 491;
         public const ushort ME1LicenseeVersion = 1008;
+
         public const ushort ME1XboxUnrealVersion = 391;
         public const ushort ME1XboxLicenseeVersion = 92;
         public const ushort ME1PS3UnrealVersion = 684; //same as ME3 ;)
@@ -117,15 +118,6 @@ namespace LegendaryExplorerCore.Packages
         public Endian Endian { get; }
         public MEGame Game { get; private set; } //can only be ME1, ME2, ME3, LE1, LE2, LE3. UDK is a separate class
         public GamePlatform Platform { get; private set; }
-
-        public enum GamePlatform
-        {
-            Unknown, //Unassigned
-            PC,
-            Xenon,
-            PS3,
-            WiiU
-        }
 
         public MELocalization Localization { get; } = MELocalization.None;
 
@@ -213,7 +205,7 @@ namespace LegendaryExplorerCore.Packages
         /// <param name="fs"></param>
         /// <param name="filePath"></param>
         /// <param name="onlyHeader">Only read header data. Do not load the tables or decompress</param>
-        private MEPackage(Stream fs, string filePath = null, bool onlyHeader = false, Func<ExportEntry, bool> dataLoadPredicate = null) : base(filePath != null ? File.Exists(filePath) ? Path.GetFullPath(filePath) : filePath : null)
+        internal MEPackage(Stream fs, string filePath = null, bool onlyHeader = false, Func<ExportEntry, bool> dataLoadPredicate = null) : base(filePath != null ? File.Exists(filePath) ? Path.GetFullPath(filePath) : filePath : null)
         {
             //MemoryStream fs = new MemoryStream(File.ReadAllBytes(filePath));
             //Debug.WriteLine($"Reading MEPackage from stream starting at position 0x{fs.Position:X8}");
@@ -263,6 +255,37 @@ namespace LegendaryExplorerCore.Packages
             var unrealVersion = (ushort)(versionLicenseePacked & 0xFFFF);
             var licenseeVersion = (ushort)(versionLicenseePacked >> 16);
             bool platformNeedsResolved = false;
+            var matchingPackageInfo = MEPackageHandler.GetPackageIdentifier(unrealVersion, licenseeVersion, Endian);
+            if (matchingPackageInfo != null)
+            {
+                Game = matchingPackageInfo.GameID;
+                if (matchingPackageInfo.Platform != GamePlatform.Unknown)
+                {
+                    Platform = matchingPackageInfo.Platform;
+                }
+                else
+                {
+                    // Needs resolved, which is done later in parsing.
+                    if (platformOverride == GamePlatform.Unknown)
+                    {
+                        //Debug.WriteLine("Cannot differentiate PS3 vs Xenon ME3 files. Assuming PS3, this may be wrong assumption!");
+                        platformNeedsResolved = true;
+                        Platform = GamePlatform.PS3; //This is placeholder as Xenon and PS3 use same header format
+                    }
+                    else
+                    {
+                        Platform = platformOverride; // Used for fully compressed packages
+                    }
+                }
+            }
+            else
+            {
+                // We don't know what this package is for!)
+                throw new Exception($"Package format not supported. Unreal version: {unrealVersion}, Licensee version: {licenseeVersion}");
+            }
+
+
+            /*
             switch (unrealVersion)
             {
                 case ME1UnrealVersion when licenseeVersion == ME1LicenseeVersion:
@@ -341,7 +364,7 @@ namespace LegendaryExplorerCore.Packages
                     break;
                 default:
                     throw new FormatException("Not a Mass Effect Package!");
-            }
+            }*/
             FullHeaderSize = packageReader.ReadInt32();
             int foldernameStrLen = packageReader.ReadInt32();
             //always "None", so don't bother saving result

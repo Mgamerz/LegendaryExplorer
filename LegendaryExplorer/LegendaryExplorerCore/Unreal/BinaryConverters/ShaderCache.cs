@@ -20,7 +20,7 @@ namespace LegendaryExplorerCore.Unreal.BinaryConverters
 
         protected override void Serialize(SerializingContainer2 sc)
         {
-            if (sc.Pcc.Platform != MEPackage.GamePlatform.PC) return; //We do not support non-PC shader cache
+            if (sc.Pcc.Platform != GamePlatform.PC) return; //We do not support non-PC shader cache
             byte platform = sc.Game.IsLEGame() ? (byte)5 : (byte)0;
             sc.Serialize(ref platform);
             sc.Serialize(ref ShaderTypeCRCMap, SCExt.Serialize, SCExt.Serialize);

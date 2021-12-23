@@ -581,7 +581,7 @@ namespace LegendaryExplorerCore.Unreal.ObjectInfo
                 case "ArrayProperty":
                     type = PropertyType.ArrayProperty;
                     // 44 is not correct on other platforms besides PC
-                    PropertyInfo arrayTypeProp = getProperty(pcc.GetUExport(EndianReader.ToInt32(entry.DataReadOnly, entry.FileRef.Platform == MEPackage.GamePlatform.PC ? 44 : 32, entry.FileRef.Endian)));
+                    PropertyInfo arrayTypeProp = getProperty(pcc.GetUExport(EndianReader.ToInt32(entry.DataReadOnly, entry.FileRef.Platform == GamePlatform.PC ? 44 : 32, entry.FileRef.Endian)));
                     if (arrayTypeProp != null)
                     {
                         switch (arrayTypeProp.Type)
